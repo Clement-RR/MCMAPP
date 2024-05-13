@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BPMN Visualization</title>
+    <script>
+        // 在页面加载完成后运行此函数
+        window.onload = function() {
+            createDropdowns();
+        };
+
+        // 此函数负责创建所有的下拉菜单
+        function createDropdowns() {
+            const dropdownPlaces = document.querySelectorAll('.dropdown-container'); // 选择所有需要下拉菜单的容器
+
+            // 对每个容器进行操作
+            dropdownPlaces.forEach(function(container) {
+                const select = document.createElement('select'); // 创建select元素
+                select.id = container.id ; // 为select元素创建一个基于容器id的唯一id
+                // 添加选项1到9
+                for (let i = 0; i <= 9; i++) {
+                    const option = document.createElement('option'); // 创建option元素
+                    option.value = i;
+                    option.textContent = i;
+                    select.appendChild(option); // 将option添加到select中
+                }
+                container.prepend(select); // 将select添加到当前容器中
+            });
+        }
+    </script>
+    <style>
+        body {
+            display: flex; /* 定义为 flex 容器 */
+            height: 100vh;
+            margin: 0; /* 移除默认的 margin */
+        }
+        #leftPanel {
+            width: 50%; /* 左侧面板占据50%的宽度 */
+            height: 100%; /* 全高 */
+            display: flex;
+            justify-content: center; /* 水平居中 bpmnObject */
+            align-items: center;  /*垂直居中 bpmnObject */
+        }
+        #rightPanel {
+            width: 50%; /* 右侧面板也占据50%的宽度 */
+            height: 100%; /* 全高 */
+            display: flex;
+            flex-direction: column; /* 子元素垂直排列 */
+
+            overflow: auto; /* 超出内容可滚动 */
+            padding: 20px; /* 留点间隙 */
+        }
+        .accordion {
+            width: 100%; /* 满宽 */
+            padding: 15px;
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            border: none;
+            text-align: left;
+            outline: none;
+            transition: 0.4s;
+            margin-top: 10px;
+        }
+        .active, .accordion:hover {
+            background-color: #ccc;
+        }
+        .panel {
+            display: none;
+            background-color: white;
+            overflow: hidden;
+            width: 100%; /* 满宽 */
+            overflow-y: auto;
+        }
+        .inner-accordion {
+            background-color: #ddd;
+            color: #333;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 14px;
+            transition: 0.4s;
+
+            margin-left: 40px; /* 添加左边距以产生缩进效果 */
+        }
+
+        .inner-panel {
+            padding: 0 15px;
+            display: none;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            margin-left: 40px;
+            font-size: 12px;
+        }
+
+        select, input[type="checkbox"] {
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;        /* 启用 Flexbox */
+            justify-content: space-between; /* 使用 space-between 使子元素分布在两端 */
+            align-items: center;  /* 垂直居中对齐 */
+            width: 100%;          /* 可以根据需要调整容器的宽度 */
+            margin-top: 10px;
+        }
+
+        .left-button {
+            margin-left: 20px;/* 根据需要调整样式 */
+        }
+
+        .right-button {
+            margin-right: 20px;/* 根据需要调整样式 */
+        }
+
+        .spacer {
+            flex-grow: 1; /* 让间隔元素增长以填充空间，推动按钮到两边 */
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <div id="leftPanel">
+        <object id="bpmnObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="100%"></object>
+    </div>
+    <div id="rightPanel">
+        <div id="processSelectContainer">
+            <label for="processSelectContainer">Current Process: </label>
+        </div>
+
+        <button class="accordion">General Process Attributes</button>
+        <div class="panel">
+            <button class="inner-accordion">Engagement</button>
+            <div class="inner-panel">
+                <div class="dropdown-container" id="gpa01">
+                    <label for="gpa01">Communication effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa02">
+                    <label for="gpa02">Interaction with external stakeholders</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa03">
+                    <label for="gpa03">Collaboration effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa04">
+                    <label for="gpa04">Conflict resolution effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa05">
+                    <label for="gpa05">Participation encouraging effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa06">
+                    <label for="gpa06">Learning effort</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Problem solving</button>
+            <div class="inner-panel">
+                <div class="dropdown-container" id="gpa07">
+                    <label for="gpa07">Problem identification effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa08">
+                    <label for="gpa08">Decision-making effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa09">
+                    <label for="gpa09">Problem solving effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa10">
+                    <label for="gpa10">Analysis effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa11">
+                    <label for="gpa11">Information gathering effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa12">
+                    <label for="gpa12">Mathematical reasoning effort</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Requirements</button>
+            <div class="inner-panel">
+                <div class="dropdown-container" id="gpa13">
+                    <label for="gpa13">Required knowledge</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa14">
+                    <label for="gpa14">Required Skill</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa15">
+                    <label for="gpa15">Required creativity</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Project organization</button>
+            <div class="inner-panel">
+                <div class="dropdown-container" id="gpa16">
+                    <label for="gpa16">Time planning effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa17">
+                    <label for="gpa17">Responsibility planning effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa18">
+                    <label for="gpa18">Resource planning effort</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Documentation</button>
+            <div class="inner-panel">
+                <div class="dropdown-container" id="gpa19">
+                    <label for="gpa19">Documentation effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa20">
+                    <label for="gpa20">Visualization effort</label>
+                </div>
+
+                <div class="dropdown-container" id="gpa21">
+                    <label for="gpa21">Text Generation effort</label>
+                </div>
+
+                 <div class="dropdown-container" id="gpa22">
+                    <label for="gpa22">Information saving effort</label>
+                </div>
+            </div>
+        </div>
+
+        <button class="accordion">Specific Process Attributes</button>
+        <div class="panel">
+            <button class="inner-accordion">Screening and Identification</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa01">
+                    <label for="spa01">Identification of potential MCs</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Assessment and Profiling</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa02">
+                    <label for="spa02">Rough impact analysis</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa03">
+                    <label for="spa03">Creation of MC profile</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa04">
+                    <label for="spa04">Update of MC profile</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa05">
+                    <label for="spa05">Initial resource estimation</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa06">
+                    <label for="spa06">Initial responsibility assignment</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa07">
+                    <label for="spa07">Relevance decision</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Detailed analysis</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa08">
+                    <label for="spa08">Aggregation of information</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa09">
+                    <label for="spa09">Detailed stakeholder identification</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa10">
+                    <label for="spa10">Stakeholder communication</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa11">
+                    <label for="spa11">Detailed risk analysis</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa12">
+                    <label for="spa12">Detailed impact analysis</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Solution concept</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa13">
+                    <label for="spa13">Description of problem</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa14">
+                    <label for="spa14">Development of solutions</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa15">
+                    <label for="spa15">Analysis of change propagation</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa16">
+                    <label for="spa16">Selection of final solution</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa17">
+                    <label for="spa17">Estimation of invest and benefit</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Planning</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa18">
+                    <label for="spa18">Creation of change plan</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa19">
+                    <label for="spa19">(Re-)Assingment of roles and responsibilities</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa20">
+                    <label for="spa20">Release of change request</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa21">
+                    <label for="spa21">Alignement of change plan with customer</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa22">
+                    <label for="spa22">Creation of sourcing plan</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa23">
+                    <label for="spa23">Coordination of MC project</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa24">
+                    <label for="spa24">Procurement of required equipment</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa25">
+                    <label for="spa25">Creation of implementation plan</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Implementation</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa26">
+                    <label for="spa26">Implementation of MC</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa27">
+                    <label for="spa27">Check MC</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa28">
+                    <label for="spa28">MC quality and performance test</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa29">
+                    <label for="spa29">Review and update of information systems</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa30">
+                    <label for="spa30">Confirmation of go to production</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa31">
+                    <label for="spa31">Review of MC</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Evaluation and closure</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa32">
+                    <label for="spa32">Final evaluation of MC</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa33">
+                    <label for="spa33">Description of Lessons Learned</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa34">
+                    <label for="spa34">Finalize documentation</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spa35">
+                    <label for="spa35">MC closure</label>
+                </div>
+            </div>
+        </div>
+
+        <button class="accordion">Process Information</button>
+        <div class="panel">
+            <button class="inner-accordion">Screening and Identification</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi01">
+                    <label for="pi01">Potential MC</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Assessment and Profiling</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi02">
+                    <label for="pi02">Responsibility</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi03">
+                    <label for="pi03">Relevance</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Detailed analysis</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi04">
+                    <label for="pi04">Stakeholders</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi05">
+                    <label for="pi05">Change risk</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi06">
+                    <label for="pi06">Change impact</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="opi07">
+                    <label for="pi07">Prioritization</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi08">
+                    <label for="pi08">Costs</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi09">
+                    <label for="pi09">Aggregation potential</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Solution concept</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi10">
+                    <label for="pi10">Problem</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi11">
+                    <label for="pi11">Target</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi12">
+                    <label for="pi12">Solution concept(s)</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi13">
+                    <label for="pi13">Change propagation</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi14">
+                    <label for="pi14">Estimated invest</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi15">
+                    <label for="pi15">Estimated benefit</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi16">
+                    <label for="pi16">Final solution</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Planning</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi17">
+                    <label for="pi17">Roles</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi18">
+                    <label for="pi18">Required human ressources</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi19">
+                    <label for="pi19">Required financial ressources</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi20">
+                    <label for="pi20">Required suppliers</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi21">
+                    <label for="pi21">Required materials and equipment</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi22">
+                    <label for="pi22">Implementation activities</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi23">
+                    <label for="pi23">Implementation timeline</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi24">
+                    <label for="pi24">Requirement of stop of production</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Implementation</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi25">
+                    <label for="pi25">Quality test result</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi26">
+                    <label for="pi26">Performance test result</label>
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi27">
+                    <label for="pi27">Success of implementation</label>
+                </div>
+            </div>
+
+            <button class="inner-accordion">Evaluation and closure</button>
+            <div class="inner-panel">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="pi28">
+                    <label for="pi28">Lessons Learned</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="left-button">Save</button>
+            <div class="spacer"></div> <!-- 用于推动按钮到两边 -->
+            <button class="right-button">Next</button>
+        </div>
+
+
+    </div>
+    <script>
+     /* 提取任务流程名称 */
+        document.addEventListener('DOMContentLoaded', function() {
+    fetch('/static/bpmn.svg')  // 确保这是 SVG 文件的正确路径
+    .then(response => response.text())
+    .then(svgData => {
+        // 使用正则表达式提取注释
+        const comments = svgData.match(/<!--(.*?)-->/g).map(comment => {
+            return comment.replace(/<!--|-->|\s/g, '');  // 清除注释标签和多余空格
+        });
+
+        // 创建选择框
+        const select = document.createElement('select');
+        comments.forEach(comment => {
+            const option = document.createElement('option');
+            option.value = comment;
+            option.textContent = comment;
+            select.appendChild(option);
+        });
+
+        // 将选择框添加到指定的容器中
+        const container = document.getElementById('processSelectContainer');
+        if (container) {
+            container.appendChild(select);
+        } else {
+            console.error('Container for the select box not found');
+        }
+    })
+    .catch(error => console.error('Error loading or processing SVG file:', error));
+});
+
+         /* accordion点击展开 */
+    var acc = document.getElementsByClassName("accordion");
+    var innerAcc = document.getElementsByClassName("inner-accordion");
+
+    for (let i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+
+    for (let i = 0; i < innerAcc.length; i++) {
+        innerAcc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+
+     /* 数据储存 */
+    document.addEventListener('DOMContentLoaded', function () {
+    const saveButton = document.querySelector('.left-button');
+
+    saveButton.addEventListener('click', function() {
+        const selectedOption = document.querySelector('#processSelectContainer select').value;
+        const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
+        const data = [];
+
+        inputs.forEach(input => {
+            data.push({
+                id: input.id,
+                value: input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value
+            });
+        });
+        fetch('/update_data', {  // Flask endpoint
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ selectedOption, data })
+        })
+        .then(response => response.json())
+        .then(json => console.log('Response:', json))
+        .catch(error => console.error('Error:', error));
+    });
+});
+
+
+    </script>
+</body>
+</html>
