@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input with DSM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;
+        }
+        main {
+            margin-top: 50px;
+        }
+        button, a.button, label.button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: #4CAF50; /* Consistent button color */
+            text-decoration: none; /* Remove underline from links */
+            display: inline-block; /* Make sure label behaves like a button */
+        }
+        input[type="file"] {
+            display: none; /* Keep the file input hidden */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Initialization - Step 1 - Input Process - Input with DSM</h1>
+    </header>
+    <main>
+        <a href="{{ url_for('static', filename='DSM_Template.xlsx') }}" download class="button">Download Template</a>
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="uploadFile" style="display:none"/>
+            <label for="uploadFile" class="button">Upload File</label>
+        </form>
+        <button id="generateBPMN" class="button">Generate BPMN</button>
+        <button id="nextStep" class="button">Next Step</button>
+        <div id="message"></div>
+    </main>
+    <script>
+        document.getElementById('uploadFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const messageDiv = document.getElementById('message');
+                    if (data.message) {
+                        messageDiv.innerText = data.message;
+                    }
+                })
+                .catch(error => {
+                    const messageDiv = document.getElementById('message');
+                    messageDiv.innerText = 'File upload failed.';
+                });
+            }
+        });
+
+        document.getElementById('generateBPMN').addEventListener('click', function() {
+            fetch('/generate_bpmn', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                if (data.message) {
+                    messageDiv.innerText = data.message;
+                }
+            })
+            .catch(error => {
+                const messageDiv = document.getElementById('message');
+                messageDiv.innerText = 'BPMN generation failed.';
+            });
+        });
+
+        document.getElementById('nextStep').addEventListener('click', function() {
+            window.location.href = '/next_step';
+        });
+    </script>
+</body>
+</html>

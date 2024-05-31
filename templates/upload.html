@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload DSM File</title>
+</head>
+<body>
+    <h2>Upload DSM File</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Import DSM File">
+    </form>
+    <button onclick="window.location.href='/static/DSM_template.xlsx'">Download Template</button>
+    <!-- Conditionally display the Next Step button -->
+    {% if get_flashed_messages() %}
+        <button onclick="window.location.href='{{ url_for('next_step') }}'">Next Step</button>
+    {% endif %}
+</body>
+</html>

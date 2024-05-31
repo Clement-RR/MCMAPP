@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialization - Step 2 - Input PA & PIs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;
+        }
+        main {
+            margin-top: 50px;
+        }
+        button, a.button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: #4CAF50;
+        }
+        button#goToStep3 {
+            background-color: #4CAF50;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 20px;
+            padding: 15px 30px;
+        }
+     
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Initialization - Step 2 - Input PA & PIs</h1>
+    </header>
+    <main>
+        <button onclick="startInput()">Start Input</button>
+    </main>
+    <button id="goToStep3">Go to Step 3</button>
+    <script>
+        function startInput() {
+            window.open('http://127.0.0.1:5000/', '_blank');
+            // Additional code for input functionality can be added here
+        }
+
+        document.getElementById('goToStep3').addEventListener('click', function() {
+            window.location.href = 'step3_input_ca_mdts.html'; // Modify with the actual path to your step 3 page
+        });
+    </script>
+</body>
+</html>
