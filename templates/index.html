@@ -127,12 +127,10 @@
 </head>
 <body>
     <div id="leftPanel">
-        <object id="bpmnObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="100%"></object>
+        <object id="svgObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="100%"></object>
     </div>
     <div id="rightPanel">
-        <div id="processSelectContainer">
-            <label for="processSelectContainer">Current Process: </label>
-        </div>
+        <div id="nodeTitle">Current editing process: <span id="nodeName">____</span></div>
 
         <button class="accordion">General Process Attributes</button>
         <div class="panel">
@@ -612,35 +610,42 @@
 
     </div>
     <script>
-     /* 提取任务流程名称 */
-        document.addEventListener('DOMContentLoaded', function() {
-    fetch('/static/bpmn.svg')  // 确保这是 SVG 文件的正确路径
-    .then(response => response.text())
-    .then(svgData => {
-        // 使用正则表达式提取注释
-        const comments = svgData.match(/<!--(.*?)-->/g).map(comment => {
-            return comment.replace(/<!--|-->|\s/g, '');  // 清除注释标签和多余空格
+     /* 提取任务流程名称*/
+        document.addEventListener("DOMContentLoaded", function() {
+            const svgObject = document.getElementById("svgObject");
+            let selectedNodeTitle = ''; // 存储点击的节点的标题
+            svgObject.addEventListener("load", function() {
+                const svgDoc = svgObject.getSVGDocument();
+
+                // 获取所有class为node的元素
+                const nodes = svgDoc.querySelectorAll("g.node");
+
+                nodes.forEach(node => {
+                    node.addEventListener("click", function() {
+                        // 移除所有节点的填充颜色
+                        nodes.forEach(n => {
+                            const shape = n.querySelector("ellipse, polygon, circle");
+                            if (shape) {
+                                shape.style.fill = "";  // 清除填充颜色
+                            }
+                        });
+
+                        // 为当前节点添加高亮填充颜色
+                        const shape = this.querySelector("ellipse, polygon, circle");
+                        if (shape) {
+                            shape.style.fill = "yellow";
+                        }
+
+                        // 显示title
+                        const title = this.querySelector("title").textContent;
+                        document.getElementById("nodeName").textContent = title;
+                        selectedNodeTitle = title; // 存储选中的节点标题
+                    });
+                });
+            });
         });
 
-        // 创建选择框
-        const select = document.createElement('select');
-        comments.forEach(comment => {
-            const option = document.createElement('option');
-            option.value = comment;
-            option.textContent = comment;
-            select.appendChild(option);
-        });
 
-        // 将选择框添加到指定的容器中
-        const container = document.getElementById('processSelectContainer');
-        if (container) {
-            container.appendChild(select);
-        } else {
-            console.error('Container for the select box not found');
-        }
-    })
-    .catch(error => console.error('Error loading or processing SVG file:', error));
-});
 
          /* accordion点击展开 */
     var acc = document.getElementsByClassName("accordion");
@@ -675,7 +680,6 @@
     const saveButton = document.querySelector('.left-button');
 
     saveButton.addEventListener('click', function() {
-        const selectedOption = document.querySelector('#processSelectContainer select').value;
         const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
         const data = [];
 
@@ -690,7 +694,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ selectedOption, data })
+            body: JSON.stringify({ selectedOption: selectedNodeTitle, data })
         })
         .then(response => response.json())
         .then(json => console.log('Response:', json))

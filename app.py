@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,session
 import pandas as pd
 import os
 import time
 from dsm2bpmn import initialize_and_generate_svg
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # 用于闪现消息
@@ -15,19 +16,46 @@ app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 def home():
     return render_template('start_page.html')
 
+@app.route('/initialization')
+def initialization():
+    return render_template('initialization.html')
+
+@app.route('/input_with_dsm')
+def input_with_dsm():
+    return render_template('input_with_dsm.html')
+
+@app.route('/step2_input_pa_pis')
+def step2_input_pa_pis():
+    return render_template('step2_input_pa_pis.html')
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file:
-            input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            output_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'data.csv')
-            output_svg_path = os.path.join(app.config['OUTPUT_FOLDER'], 'bpmn.svg')
-            file.save(input_file_path)
-            flash('File successfully uploaded')
-            initialize_and_generate_svg(input_file_path, output_csv_path, output_svg_path)
-            return redirect(url_for('upload'))
-    return render_template('upload.html')
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+    if file:
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        session['uploaded_file'] = filename  # 保存上传的文件名到 session
+        return jsonify({'message': 'File successfully uploaded'}), 200
+    return jsonify({'message': 'File upload failed'}), 400
+
+@app.route('/generate_bpmn', methods=['POST'])
+def generate_bpmn():
+    try:
+        if 'uploaded_file' not in session:
+            return jsonify({'message': 'No file uploaded'}), 400
+        filename = session['uploaded_file']
+        input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # 这里需要根据实际情况修改
+        output_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'data.csv')
+        output_svg_path = os.path.join(app.config['OUTPUT_FOLDER'], 'bpmn.svg')
+        initialize_and_generate_svg(input_file_path, output_csv_path, output_svg_path)
+        return jsonify({'message': 'BPMN successfully generated'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error generating BPMN: {e}'}), 500
 
 @app.route('/next_step')
 def next_step():

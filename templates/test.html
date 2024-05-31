@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG Node Interaction</title>
+    <style>
+        #nodeTitle {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <embed id="svgEmbed" src="/output_graph.svg" type="image/svg+xml" width="930" height="767">
+    <br>
+    <div id="nodeTitle">Current editing process: <span id="nodeName">____</span></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const svgEmbed = document.getElementById("svgEmbed");
+            svgEmbed.addEventListener("load", function() {
+                const svgDoc = svgEmbed.getSVGDocument();
+
+                // 获取所有class为node的元素
+                const nodes = svgDoc.querySelectorAll("g.node");
+
+                nodes.forEach(node => {
+                    node.addEventListener("click", function() {
+                        // 移除所有节点的填充颜色
+                        nodes.forEach(n => {
+                            const shape = n.querySelector("ellipse, polygon, circle");
+                            if (shape) {
+                                shape.style.fill = "";  // 清除填充颜色
+                            }
+                        });
+
+                        // 为当前节点添加高亮填充颜色
+                        const shape = this.querySelector("ellipse, polygon, circle");
+                        if (shape) {
+                            shape.style.fill = "yellow";
+                        }
+
+                        // 显示title
+                        const title = this.querySelector("title").textContent;
+                        document.getElementById("nodeName").textContent = title;
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
