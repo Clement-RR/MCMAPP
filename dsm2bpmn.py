@@ -1,34 +1,66 @@
 import pandas as pd
 import csv
 import pygraphviz as pgv
+import os
 
-def initialize_data_csv(file_path, output_dsm_path):
-    #改成单独表格
-    input_file = file_path
-    output_file = output_dsm_path
+def initialize_data_csv(file_path, output_folder):
+    # 确保输出文件夹存在
+    os.makedirs(output_folder, exist_ok=True)
+
+    # 定义输出文件路径
+    dsm_output_file = os.path.join(output_folder, 'dsm.csv')
+    pa_pi_output_file = os.path.join(output_folder, 'pa_pi.csv')
+    change_attribute_output_file = os.path.join(output_folder, 'change_attribute.csv')
+    digital_tools_output_file = os.path.join(output_folder, 'digital_tools.csv')
     # 生成 gpa01-gpa22, spa01-spa35, pi01-pi28
     additional_columns = [f'gpa{i:02d}' for i in range(1, 23)] + \
                          [f'spa{i:02d}' for i in range(1, 36)] + \
                          [f'pi{i:02d}' for i in range(1, 29)]
 
     try:
-        with open(input_file, mode='r', newline='') as infile, \
-             open(output_file, mode='w', newline='') as outfile:
+        with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
             reader = csv.DictReader(infile)
-            # 获取除前两列外的其余所有列的字段名
-            original_fieldnames = reader.fieldnames[2:]  # 排除前两个字段名
-            fieldnames = original_fieldnames + additional_columns  # 添加新列到字段名列表中
-            writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+            original_fieldnames = reader.fieldnames
 
-            writer.writeheader()
-            for row in reader:
-                # 创建新行，只包括原始数据中除前两列外的数据，并为新增的列初始化为空字符串
-                new_row = {field: row[field] for field in original_fieldnames}
-                new_row.update({col: '' for col in additional_columns})
-                writer.writerow(new_row)
+            # 获取除前两列外的其余所有列的字段名
+            dsm_fieldnames = original_fieldnames[2:]
+            pa_pi_fieldnames = ['Name'] + additional_columns
+
+            # 打开输出文件并写入数据
+            with open(dsm_output_file, mode='w', newline='', encoding='utf-8') as dsm_outfile, \
+                    open(pa_pi_output_file, mode='w', newline='', encoding='utf-8') as pa_pi_outfile, \
+                    open(change_attribute_output_file, mode='w', newline='',
+                         encoding='utf-8') as change_attribute_outfile, \
+                    open(digital_tools_output_file, mode='w', newline='', encoding='utf-8') as digital_tools_outfile:
+                dsm_writer = csv.DictWriter(dsm_outfile, fieldnames=dsm_fieldnames)
+                pa_pi_writer = csv.DictWriter(pa_pi_outfile, fieldnames=pa_pi_fieldnames)
+                change_attribute_writer = csv.writer(change_attribute_outfile)
+                digital_tools_writer = csv.writer(digital_tools_outfile)
+
+                dsm_writer.writeheader()
+                pa_pi_writer.writeheader()
+                change_attribute_writer.writerow(['Change Attribute'])  # Example header
+                digital_tools_writer.writerow(['Digital Tools'])  # Example header
+
+                for row in reader:
+                    # 写入 dsm.csv
+                    dsm_row = {field: row[field] for field in dsm_fieldnames}
+                    dsm_writer.writerow(dsm_row)
+
+                    # 写入 pa_pi.csv
+                    pa_pi_row = {'Name': row['Name']}
+                    pa_pi_row.update({col: '' for col in additional_columns})
+                    pa_pi_writer.writerow(pa_pi_row)
+
+                    # 写入 change_attribute.csv (Example content)
+                    change_attribute_writer.writerow(['Example change attribute data'])
+
+                    # 写入 digital_tools.csv (Example content)
+                    digital_tools_writer.writerow(['Example digital tools data'])
+
         print("CSV initialization completed successfully.")
     except FileNotFoundError:
-        print(f"File {input_file} not found. Ensure it's in the correct directory.")
+        print(f"File {file_path} not found. Ensure it's in the correct directory.")
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -119,6 +151,3 @@ def generate_bpmn_svg(file_path, output_svg_path):
     G.layout(prog='neato')
     G.draw(output_svg_path)
 
-def initialize_and_generate_svg(file_path, output_dsm_path, output_svg_path):
-    initialize_data_csv(file_path, output_dsm_path)
-    generate_bpmn_svg(file_path, output_svg_path)
