@@ -604,18 +604,24 @@
         <div class="button-container">
             <button class="left-button">Save</button>
             <div class="spacer"></div> <!-- 用于推动按钮到两边 -->
+            <button class="deleteButton">Delete</button>
             <button class="right-button">Next</button>
         </div>
 
 
     </div>
     <script>
-     /* 提取任务流程名称*/
         document.addEventListener("DOMContentLoaded", function() {
-            const svgObject = document.getElementById("svgObject");
             let selectedNodeTitle = ''; // 存储点击的节点的标题
+            let selectedNode = null; // 存储选中的节点
+            const savedNodes = {}; // 存储已保存节点的状态
+            const saveButton = document.querySelector('.left-button');
+            const deleteButton = document.querySelector('.deleteButton');
+
+            /* 提取任务流程名称*/
+            const svgObject = document.getElementById("svgObject");
             svgObject.addEventListener("load", function() {
-                const svgDoc = svgObject.getSVGDocument();
+                const svgDoc = svgObject.contentDocument || svgObject.getSVGDocument();
 
                 // 获取所有class为node的元素
                 const nodes = svgDoc.querySelectorAll("g.node");
@@ -626,7 +632,9 @@
                         nodes.forEach(n => {
                             const shape = n.querySelector("ellipse, polygon, circle");
                             if (shape) {
-                                shape.style.fill = "";  // 清除填充颜色
+                                if (!savedNodes[n.querySelector("title").textContent]) {
+                                    shape.style.fill = "";  // 清除填充颜色
+                                }
                             }
                         });
 
@@ -640,67 +648,103 @@
                         const title = this.querySelector("title").textContent;
                         document.getElementById("nodeName").textContent = title;
                         selectedNodeTitle = title; // 存储选中的节点标题
+                        selectedNode = this; // 存储选中的节点
                     });
                 });
             });
-        });
 
 
 
-         /* accordion点击展开 */
-    var acc = document.getElementsByClassName("accordion");
-    var innerAcc = document.getElementsByClassName("inner-accordion");
+            /* accordion点击展开 */
+            var acc = document.getElementsByClassName("accordion");
+            var innerAcc = document.getElementsByClassName("inner-accordion");
 
-    for (let i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
+            for (let i = 0; i < acc.length; i++) {
+                acc[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
             }
-        });
-    }
 
-    for (let i = 0; i < innerAcc.length; i++) {
-        innerAcc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
+            for (let i = 0; i < innerAcc.length; i++) {
+                innerAcc[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
             }
-        });
-    }
 
-     /* 数据储存 */
-    document.addEventListener('DOMContentLoaded', function () {
-    const saveButton = document.querySelector('.left-button');
+            /* 数据储存 */
+            saveButton.addEventListener('click', function() {
+            const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
+            const data = [];
 
-    saveButton.addEventListener('click', function() {
-        const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
-        const data = [];
-
-        inputs.forEach(input => {
-            data.push({
-                id: input.id,
-                value: input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value
+            inputs.forEach(input => {
+                data.push({
+                    id: input.id,
+                    value: input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value
+                });
             });
-        });
-        fetch('/update_data', {  // Flask endpoint
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ selectedOption: selectedNodeTitle, data })
-        })
-        .then(response => response.json())
-        .then(json => console.log('Response:', json))
-        .catch(error => console.error('Error:', error));
+            fetch('/update_data', {  // Flask endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ selectedOption: selectedNodeTitle, data })
+            })
+            .then(response => response.json())
+            .then(json => {
+                console.log('Response:', json);
+                if (json.status === 'success') {
+                    if (selectedNode) {
+                        const shape = selectedNode.querySelector("ellipse, polygon, circle");
+                        if (shape) {
+                            shape.style.fill = "red";  // 将节点颜色改为红色
+                            savedNodes[selectedNodeTitle] = true; // 将节点标记为已保存
+                        }
+                    }
+                }
+            })
+
+            .catch(error => console.error('Error:', error));
+            });
+
+            /* 删除节点 */
+            deleteButton.addEventListener('click', function() {
+                fetch('/delete_data', {  // Flask endpoint
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ selectedOption: selectedNodeTitle })
+                })
+                .then(response => response.json())
+                .then(json => {
+                    console.log('Response:', json);
+                    if (json.status === 'success') {
+                        if (selectedNode) {
+                            const shape = selectedNode.querySelector("ellipse, polygon, circle");
+                            if (shape) {
+                                shape.style.fill = "";  // 重置节点颜色
+                                delete savedNodes[selectedNodeTitle]; // 移除节点保存状态
+                            }
+                            document.getElementById("nodeName").textContent = "____";
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
     });
-});
+
 
 
     </script>

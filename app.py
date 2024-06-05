@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 import pandas as pd
 import os
 import time
-from dsm2bpmn import initialize_and_generate_svg
+from dsm2bpmn import initialize_data_csv, generate_bpmn_svg
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -50,9 +50,10 @@ def generate_bpmn():
             return jsonify({'message': 'No file uploaded'}), 400
         filename = session['uploaded_file']
         input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # 这里需要根据实际情况修改
-        output_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'data.csv')
+        output_folder = app.config['UPLOAD_FOLDER']
         output_svg_path = os.path.join(app.config['OUTPUT_FOLDER'], 'bpmn.svg')
-        initialize_and_generate_svg(input_file_path, output_csv_path, output_svg_path)
+        initialize_data_csv(input_file_path, output_folder)
+        generate_bpmn_svg(input_file_path, output_svg_path)
         return jsonify({'message': 'BPMN successfully generated'}), 200
     except Exception as e:
         return jsonify({'message': f'Error generating BPMN: {e}'}), 500
@@ -71,7 +72,7 @@ def update_data():
     updates = data['data']
 
     # 指定 CSV 文件路径
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'data.csv')
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'pa_pi.csv')
     print(f"CSV file path: {file_path}")
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -105,6 +106,48 @@ def update_data():
                 return jsonify({'status': 'error', 'message': 'Selected option not found.'})
         else:
             return jsonify({'status': 'error', 'message': 'Selected option not found in the data.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+
+@app.route('/delete_data', methods=['POST'])
+def delete_data():
+    data = request.get_json()
+    selectedOption = data['selectedOption']
+
+    # 指定 pa_pi.csv 文件路径
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'pa_pi.csv')
+    print(f"CSV file path: {file_path}")
+
+    # 检查文件是否存在
+    if not os.path.exists(file_path):
+        print(f"File {file_path} not found.")
+        return jsonify({'status': 'error', 'message': 'Data file does not exist.'})
+
+    try:
+        # 读取 CSV 文件
+        df = pd.read_csv(file_path)
+        print("DataFrame before delete:", df.head())
+
+        # 清空指定行的除 'Name' 列以外的数据
+        row_index = df[df['Name'] == selectedOption].index
+        if not row_index.empty:
+            for col in df.columns:
+                if col != 'Name':
+                    df.at[row_index[0], col] = ''
+
+        print("DataFrame after delete:", df.head())
+
+        # 写回 CSV 文件
+        with open(file_path, 'w', newline='', encoding='utf-8') as f:
+            df.to_csv(f, index=False)
+            f.flush()
+            os.fsync(f.fileno())
+
+        # 添加短暂的延迟
+        time.sleep(0.1)
+
+        return jsonify({'status': 'success', 'message': 'Data deleted successfully.'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
