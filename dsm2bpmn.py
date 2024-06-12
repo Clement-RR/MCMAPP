@@ -12,11 +12,23 @@ def initialize_data_csv(file_path, output_folder):
     pa_pi_output_file = os.path.join(output_folder, 'pa_pi.csv')
     change_attribute_output_file = os.path.join(output_folder, 'change_attribute.csv')
     digital_tools_output_file = os.path.join(output_folder, 'digital_tools.csv')
+
     # 生成 gpa01-gpa22, spa01-spa35, pi01-pi28
     additional_columns = [f'gpa{i:02d}' for i in range(1, 23)] + \
                          [f'spa{i:02d}' for i in range(1, 36)] + \
                          [f'pi{i:02d}' for i in range(1, 29)]
 
+    change_attribute_columns = [
+        'changeName', 'changeId', 'changeDescription', 'responsibility', 'timeframe', 'changeCause',
+        'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
+        'ImpactOnInternal', 'ImpactOnExternal', 'Efforts', 'Costs', 'AvailableDataInformation',
+        'DependencyLevel', 'ChangePropagation', 'ChangeReoccurrence', 'Complexity',
+        'Challenges', 'Duration', 'Relevance', 'Urgency'
+    ]
+
+    digital_tools_columns = [
+        'Change', 'Here', 'Later'
+    ]
     try:
         with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
             reader = csv.DictReader(infile)
@@ -34,13 +46,13 @@ def initialize_data_csv(file_path, output_folder):
                     open(digital_tools_output_file, mode='w', newline='', encoding='utf-8') as digital_tools_outfile:
                 dsm_writer = csv.DictWriter(dsm_outfile, fieldnames=dsm_fieldnames)
                 pa_pi_writer = csv.DictWriter(pa_pi_outfile, fieldnames=pa_pi_fieldnames)
-                change_attribute_writer = csv.writer(change_attribute_outfile)
-                digital_tools_writer = csv.writer(digital_tools_outfile)
+                change_attribute_writer = csv.DictWriter(change_attribute_outfile, fieldnames=change_attribute_columns)
+                digital_tools_writer = csv.DictWriter(digital_tools_outfile, fieldnames=digital_tools_columns)
 
                 dsm_writer.writeheader()
                 pa_pi_writer.writeheader()
-                change_attribute_writer.writerow(['Change Attribute'])  # Example header
-                digital_tools_writer.writerow(['Digital Tools'])  # Example header
+                change_attribute_writer.writeheader()
+                digital_tools_writer.writeheader()
 
                 for row in reader:
                     # 写入 dsm.csv
@@ -52,11 +64,13 @@ def initialize_data_csv(file_path, output_folder):
                     pa_pi_row.update({col: '' for col in additional_columns})
                     pa_pi_writer.writerow(pa_pi_row)
 
-                    # 写入 change_attribute.csv (Example content)
-                    change_attribute_writer.writerow(['Example change attribute data'])
+                    # 写入 change_attribute.csv
+                    change_attribute_row = {col: '' for col in change_attribute_columns}
+                    change_attribute_writer.writerow(change_attribute_row)
 
                     # 写入 digital_tools.csv (Example content)
-                    digital_tools_writer.writerow(['Example digital tools data'])
+                    digital_tools_row = {col: '' for col in digital_tools_columns}
+                    digital_tools_writer.writerow(digital_tools_row)
 
         print("CSV initialization completed successfully.")
     except FileNotFoundError:

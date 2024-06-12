@@ -24,5 +24,7 @@
     {% if get_flashed_messages() %}
         <button onclick="window.location.href='{{ url_for('next_step') }}'">Next Step</button>
     {% endif %}
+
+    <object id="svgObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="100%"></object>
 </body>
 </html>

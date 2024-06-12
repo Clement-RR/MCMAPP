@@ -632,8 +632,11 @@
                         nodes.forEach(n => {
                             const shape = n.querySelector("ellipse, polygon, circle");
                             if (shape) {
-                                if (!savedNodes[n.querySelector("title").textContent]) {
-                                    shape.style.fill = "";  // 清除填充颜色
+                               const title = n.querySelector("title").textContent;
+                                if (savedNodes[title]) {
+                                    shape.style.fill = "red";  // 保留已保存节点的红色
+                                } else {
+                                    shape.style.fill = "";  // 清除未保存节点的颜色
                                 }
                             }
                         });
@@ -685,37 +688,37 @@
 
             /* 数据储存 */
             saveButton.addEventListener('click', function() {
-            const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
-            const data = [];
+                const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
+                const data = [];
 
-            inputs.forEach(input => {
-                data.push({
-                    id: input.id,
-                    value: input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value
+                inputs.forEach(input => {
+                    data.push({
+                        id: input.id,
+                        value: input.type === 'checkbox' ? (input.checked ? 1 : 0) : input.value
+                    });
                 });
-            });
-            fetch('/update_data', {  // Flask endpoint
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ selectedOption: selectedNodeTitle, data })
-            })
-            .then(response => response.json())
-            .then(json => {
-                console.log('Response:', json);
-                if (json.status === 'success') {
-                    if (selectedNode) {
-                        const shape = selectedNode.querySelector("ellipse, polygon, circle");
-                        if (shape) {
-                            shape.style.fill = "red";  // 将节点颜色改为红色
-                            savedNodes[selectedNodeTitle] = true; // 将节点标记为已保存
+
+                fetch('/update_data', {  // Flask endpoint
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ selectedOption: selectedNodeTitle, data })
+                })
+                .then(response => response.json())
+                .then(json => {
+                    console.log('Response:', json);
+                    if (json.status === 'success') {
+                        if (selectedNode) {
+                            const shape = selectedNode.querySelector("ellipse, polygon, circle");
+                            if (shape) {
+                                shape.style.fill = "red";  // 将节点颜色改为红色
+                                savedNodes[selectedNodeTitle] = true; // 将节点标记为已保存
+                            }
                         }
                     }
-                }
-            })
-
-            .catch(error => console.error('Error:', error));
+                })
+                .catch(error => console.error('Error:', error));
             });
 
             /* 删除节点 */
@@ -743,10 +746,7 @@
                 })
                 .catch(error => console.error('Error:', error));
             });
-    });
-
-
-
+        });
     </script>
 </body>
 </html>
