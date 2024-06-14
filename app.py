@@ -4,6 +4,7 @@ import os
 import time
 from dsm2bpmn import initialize_data_csv, generate_bpmn_svg
 from werkzeug.utils import secure_filename
+import csv
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # 用于闪现消息
@@ -12,9 +13,13 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'upload
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
+
+
+
 @app.route('/')
 def home():
     return render_template('start_page.html')
+
 
 @app.route('/initialization')
 def initialization():
@@ -150,6 +155,31 @@ def delete_data():
         return jsonify({'status': 'success', 'message': 'Data deleted successfully.'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/Input_CA')
+def Input_CA():
+    return render_template('Input_CA.html')
+
+@app.route('/save_change_attribute', methods=['POST'])
+def save_change_attribute():
+    data = request.get_json()
+
+    file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+    file_exists = os.path.isfile(file_path)
+
+    with open(file_path, mode='a', newline='', encoding='utf-8') as file:
+        fieldnames = [
+            'changeName', 'changeId', 'changeDescription', 'responsibility', 'timeframe', 'changeCause',
+            'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
+            'ImpactOnInternal', 'ImpactOnExternal', 'Efforts', 'Costs', 'AvailableDataInformation',
+            'DependencyLevel', 'ChangePropagation', 'ChangeReoccurrence', 'Complexity',
+            'Challenges', 'Duration', 'Relevance', 'Urgency'
+        ]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        writer.writerow(data)
+
+    return jsonify({'status': 'success'})
 
 
 if __name__ == '__main__':

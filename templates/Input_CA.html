@@ -27,6 +27,54 @@
                 container.prepend(select); // 将select添加到当前容器中
             });
         }
+
+        function saveData() {
+            const data = {
+                changeName: document.getElementById('changeName').value,
+                changeId: document.getElementById('changeId').value,
+                changeDescription: document.getElementById('changeDescription').value,
+                responsibility: document.getElementById('responsibility').value,
+                timeframe: document.getElementById('timeframe').value,
+                changeCause: document.getElementById('changeCause').value,
+                localization: document.getElementById('localization').value,
+                departments: document.getElementById('departments').value,
+                changeStatus: document.getElementById('changeStatus').value,
+                timeOfOccurrence: document.getElementById('timeOfOccurrence').value,
+                lessonsLearned: document.getElementById('lessonsLearned').value,
+                ImpactOnInternal: document.getElementById('ImpactOnInternal').querySelector('select').value,
+                ImpactOnExternal: document.getElementById('ImpactOnExternal').querySelector('select').value,
+                Efforts: document.getElementById('Efforts').querySelector('select').value,
+                Costs: document.getElementById('Costs').querySelector('select').value,
+                AvailableDataInformation: document.getElementById('AvailableDataInformation').querySelector('select').value,
+                DependencyLevel: document.getElementById('DependencyLevel').querySelector('select').value,
+                ChangePropagation: document.getElementById('ChangePropagation').querySelector('select').value,
+                ChangeReoccurrence: document.getElementById('ChangeReoccurrence').querySelector('select').value,
+                Complexity: document.getElementById('Complexity').querySelector('select').value,
+                Challenges: document.getElementById('Challenges').querySelector('select').value,
+                Duration: document.getElementById('Duration').querySelector('select').value,
+                Relevance: document.getElementById('Relevance').querySelector('select').value,
+                Urgency: document.getElementById('Urgency').querySelector('select').value
+            };
+
+            fetch('/save_change_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Data saved successfully.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        window.onload = function() {
+            createDropdowns();
+        };
     </script>
 
     <style>
@@ -179,7 +227,7 @@
                 <label for="Urgency">Urgency</label>
         </div>
 
-        <button class="Save">Save</button>
+        <button onclick="saveData()">Save</button>
     </div>
 
 </body>
