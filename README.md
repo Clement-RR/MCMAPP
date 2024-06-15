@@ -1,6 +1,22 @@
 # MCMapp
 
+<<<<<<< Updated upstream
 # To be finished Test
+=======
+# To be finished
+12.06
+1. CA的储存
+2. 增加一个预览窗口，可以看到已经储存了哪些CA
+3. 通过刷新按钮更新窗口信息
+4. 通过删除按钮删除选定的CA
+
+05.06
+1. input界面增加图片预览
+2. 处理储存process信息时node的变色逻辑
+3. CA的储存
+
+
+>>>>>>> Stashed changes
 1. 更改储存表单格式
 2. 测试数据传输与储存
 3. 增加功能： 1. 完成编辑的流程显示为红色
