@@ -657,10 +657,65 @@
                         document.getElementById("nodeName").textContent = title;
                         selectedNodeTitle = title; // 存储选中的节点标题
                         selectedNode = this; // 存储选中的节点
+                        fetchNodeData(title); // Fetch node data when node is clicked
                     });
                 });
             });
 
+            function fetchNodeData(nodeId) {
+                fetch('/get_pa_pi_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ node_id: nodeId }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                    } else {
+                        fillForm(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching node data:', error);
+                });
+            }
+
+            function fillForm(data) {
+    // 设置当前节点名称
+    document.getElementById('nodeName').innerText = data.Name || 'Unknown';
+
+    // 填充下拉菜单字段 (gpa01-gpa22)
+    for (let i = 1; i <= 22; i++) {
+        let dropdownId = `gpa${i.toString().padStart(2, '0')}`;
+        let value = data[dropdownId] !== undefined ? data[dropdownId] : 0;
+        let selectElement = document.querySelector(`#${dropdownId} select`);
+        if (selectElement) {
+            selectElement.value = value;
+        }
+    }
+
+    // 填充复选框字段 (spa01-spa35, pi01-pi28)
+    for (let i = 1; i <= 35; i++) {
+        let checkboxId = `spa${i.toString().padStart(2, '0')}`;
+        let checked = data[checkboxId] === 1;
+        let checkboxElement = document.getElementById(checkboxId);
+        if (checkboxElement) {
+            checkboxElement.checked = checked;
+        }
+    }
+
+    for (let i = 1; i <= 28; i++) {
+        let checkboxId = `pi${i.toString().padStart(2, '0')}`;
+        let checked = data[checkboxId] === 1;
+        let checkboxElement = document.getElementById(checkboxId);
+        if (checkboxElement) {
+            checkboxElement.checked = checked;
+        }
+    }
+}
 
 
             /* accordion点击展开 */

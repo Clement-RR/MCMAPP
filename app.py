@@ -14,6 +14,7 @@ OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 CSV_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+PA_PI_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'pa_pi.csv')
 previous_CA_columns = []
 
 
@@ -87,6 +88,17 @@ def generate_bpmn():
     except Exception as e:
         return jsonify({'message': f'Error generating BPMN: {e}'}), 500
 
+@app.route('/get_pa_pi_data', methods=['POST'])
+def get_pa_pi_data():
+    node_id = request.json.get('node_id')
+    if os.path.exists(PA_PI_CSV_PATH):
+        pa_pi_df = pd.read_csv(PA_PI_CSV_PATH)
+        if node_id in pa_pi_df['Name'].values:
+            node_data = pa_pi_df.loc[pa_pi_df['Name'] == node_id].to_dict(orient='records')[0]
+            # 将空值替换为0
+            node_data = {k: (0 if pd.isna(v) else v) for k, v in node_data.items()}
+            return jsonify(node_data)
+    return jsonify({"message": "Node data not found"}), 404
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
