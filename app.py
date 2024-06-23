@@ -58,6 +58,10 @@ def select_CA():
 def DMT():
     return render_template('DMT.html')
 
+@app.route('/input_CA')
+def input_CA():
+    return render_template('input_CA.html')
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if 'file' not in request.files:
