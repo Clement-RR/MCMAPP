@@ -30,17 +30,17 @@
 
         function saveData() {
             const data = {
-                changeName: document.getElementById('changeName').value,
-                changeId: document.getElementById('changeId').value,
-                changeDescription: document.getElementById('changeDescription').value,
-                responsibility: document.getElementById('responsibility').value,
-                timeframe: document.getElementById('timeframe').value,
-                changeCause: document.getElementById('changeCause').value,
-                localization: document.getElementById('localization').value,
-                departments: document.getElementById('departments').value,
-                changeStatus: document.getElementById('changeStatus').value,
-                timeOfOccurrence: document.getElementById('timeOfOccurrence').value,
-                lessonsLearned: document.getElementById('lessonsLearned').value,
+                changeName: document.getElementById('changeName').value.toString(),
+                changeId: document.getElementById('changeId').value.toString(),
+                changeDescription: document.getElementById('changeDescription').value.toString(),
+                responsibility: document.getElementById('responsibility').value.toString(),
+                timeframe: document.getElementById('timeframe').value.toString(),
+                changeCause: document.getElementById('changeCause').value.toString(),
+                localization: document.getElementById('localization').value.toString(),
+                departments: document.getElementById('departments').value.toString(),
+                changeStatus: document.getElementById('changeStatus').value.toString(),
+                timeOfOccurrence: document.getElementById('timeOfOccurrence').value.toString(),
+                lessonsLearned: document.getElementById('lessonsLearned').value.toString(),
                 ImpactOnInternal: document.getElementById('ImpactOnInternal').querySelector('select').value,
                 ImpactOnExternal: document.getElementById('ImpactOnExternal').querySelector('select').value,
                 Efforts: document.getElementById('Efforts').querySelector('select').value,
@@ -67,6 +67,11 @@
             .then(data => {
                 if (data.status === 'success') {
                     alert('Data saved successfully.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100); // 0.1秒延迟后刷新页面
+                } else {
+                    alert('Error: ' + data.message);
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -120,6 +125,19 @@
 <body>
     <!-- Left panel -->
     <div id="leftPanel">
+        <div id="table">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Change Name</th>
+                        <th>Change ID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
         <!-- Specification -->
         <div id="Specification">
             <div class="input-container">
@@ -227,8 +245,53 @@
                 <label for="Urgency">Urgency</label>
         </div>
 
-        <button onclick="saveData()">Save</button>
+        <button id="save" onclick="saveData()">Save</button>
+        <button id="finish" onclick="window.location.href='{{ url_for('input_with_dsm') }}'">Finish</button>
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/get_change_attribute')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data received:', data);  // 输出接收到的数据进行调试
+                const tableBody = document.querySelector('#dataTable tbody');
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.changeName}</td>
+                        <td>${row.changeId}</td>
+                        <td><button onclick="deleteRow('${row.changeId}')">Delete</button></td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    });
+
+function deleteRow(changeId) {
+    fetch('/delete_change_attribute', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ changeId: changeId.toString() })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Row deleted successfully.');
+            location.reload();  // 删除成功后刷新页面
+        } else {
+            alert('Error deleting row: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
 </body>
 </html>

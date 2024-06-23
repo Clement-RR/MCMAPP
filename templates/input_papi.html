@@ -605,15 +605,15 @@
             <button class="left-button">Save</button>
             <div class="spacer"></div> <!-- 用于推动按钮到两边 -->
             <button class="deleteButton">Delete</button>
-            <button class="right-button" id="next">Next</button>
+            <button class="right-button" id="finish">Finish</button>
         </div>
 
 
     </div>
     <script>
-        const nextButton = document.getElementById('next');
+        const nextButton = document.getElementById('finish');
         nextButton.addEventListener('click', () => {
-            window.location.href = '{{ url_for("Input_CA") }}';
+            window.location.href = '{{ url_for("input_with_dsm") }}';
         });
 
         document.addEventListener("DOMContentLoaded", function() {

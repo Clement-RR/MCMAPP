@@ -1,6 +1,10 @@
 # MCMapp
 
 # To be finished
+16.06
+1. Change ID的唯一性
+2. 添加view功能显示已编辑的Change attribute
+
 12.06
 1. CA的储存
 2. 增加一个预览窗口，可以看到已经储存了哪些CA

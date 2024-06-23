@@ -13,7 +13,21 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'upload
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
+CSV_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+previous_CA_columns = []
 
+
+change_attribute_columns = [
+    'changeName', 'changeId', 'changeDescription', 'responsibility', 'timeframe', 'changeCause',
+    'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
+]
+
+def initialize_previous_columns():
+    global previous_CA_columns
+    if os.path.exists(CSV_FILE_PATH):
+        existing_df = pd.read_csv(CSV_FILE_PATH)
+        # 过滤出非预定义的列标签
+        previous_CA_columns = [col for col in existing_df.columns if col not in change_attribute_columns]
 
 
 @app.route('/')
@@ -29,9 +43,19 @@ def initialization():
 def input_with_dsm():
     return render_template('input_with_dsm.html')
 
-@app.route('/step2_input_pa_pis')
+@app.route('/input_pa_pis')
 def step2_input_pa_pis():
-    return render_template('step2_input_pa_pis.html')
+    return render_template('input_papi.html')
+
+@app.route('/select_CA')
+def select_CA():
+    initialize_previous_columns()
+    print(previous_CA_columns)
+    return render_template('select_CA.html', previous_CA_columns=previous_CA_columns)
+
+@app.route('/DMT')
+def DMT():
+    return render_template('DMT.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -62,10 +86,6 @@ def generate_bpmn():
         return jsonify({'message': 'BPMN successfully generated'}), 200
     except Exception as e:
         return jsonify({'message': f'Error generating BPMN: {e}'}), 500
-
-@app.route('/next_step')
-def next_step():
-    return render_template('index.html')
 
 
 @app.route('/update_data', methods=['POST'])
@@ -156,28 +176,99 @@ def delete_data():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
-@app.route('/Input_CA')
-def Input_CA():
-    return render_template('Input_CA.html')
+@app.route('/select_change_attribute', methods=['POST'])
+def select_change_attribute():
+    global previous_CA_columns
+    data = request.get_json()
+    if data and 'labels' in data:
+        labels = data['labels']
+
+        if os.path.exists(CSV_FILE_PATH):
+            # 如果CSV文件存在，则读取现有的列标签
+            existing_df = pd.read_csv(CSV_FILE_PATH)
+            existing_CA_columns = list(existing_df.columns)
+        else:
+            # 如果CSV文件不存在，则初始化为空列表
+            existing_CA_columns = []
+
+        # 移除上一次写入的列标题
+        for col in previous_CA_columns:
+            if col in existing_CA_columns:
+                existing_CA_columns.remove(col)
+
+        previous_CA_columns = labels
+        print(previous_CA_columns)
+        # 合并现有列标签和新标签，去重
+        new_columns = existing_CA_columns + labels
+
+        # 创建一个新的DataFrame，只包含合并后的列标签
+        df = pd.DataFrame(columns=new_columns)
+
+        # 保存到CSV文件
+        df.to_csv(CSV_FILE_PATH, index=False)
+
+        return jsonify({"message": "Attributes saved successfully."})
+    return jsonify({"message": "No labels received."})
 
 @app.route('/save_change_attribute', methods=['POST'])
 def save_change_attribute():
     data = request.get_json()
+    data = {key: str(value) for key, value in data.items()}
+    change_id = data['changeId']
+    file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+    new_entry = pd.DataFrame([data])
+
+    # 如果文件存在，则读取现有数据并追加新的数据
+    if os.path.isfile(file_path):
+        existing_data = pd.read_csv(file_path, dtype=str)
+        if change_id in existing_data['changeId'].values:
+            return jsonify({'status': 'error', 'message': 'Change ID already exists.'})
+        combined_data = pd.concat([existing_data, new_entry], ignore_index=True)
+    else:
+        combined_data = new_entry
+
+    # 写回 CSV 文件
+    combined_data.to_csv(file_path, index=False, encoding='utf-8')
+
+    return jsonify({'status': 'success'})
+
+@app.route('/get_change_attribute', methods=['GET'])
+def get_change_attribute():
+    file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+    print(f"File path: {file_path}")  # 输出文件路径
+    if os.path.exists(file_path):
+        df = pd.read_csv(file_path, dtype=str)
+        print(df.head())  # 打印前几行数据进行调试
+        data = df[['changeName', 'changeId']].to_dict(orient='records')
+        print(data)  # 打印数据进行调试
+        return jsonify(data)
+    else:
+        print("File not found")
+        return jsonify([])
+
+@app.route('/delete_change_attribute', methods=['POST'])
+def delete_change_attribute():
+    data = request.get_json()
+    change_id = str(data.get('changeId'))
 
     file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
-    file_exists = os.path.isfile(file_path)
+    if not os.path.isfile(file_path):
+        return jsonify({'status': 'error', 'message': 'File not found.'})
 
-    with open(file_path, mode='a', newline='', encoding='utf-8') as file:
-        fieldnames = [
-            'changeName', 'changeId', 'changeDescription', 'responsibility', 'timeframe', 'changeCause',
-            'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
-            'ImpactOnInternal', 'ImpactOnExternal', 'Efforts', 'Costs', 'AvailableDataInformation',
-            'DependencyLevel', 'ChangePropagation', 'ChangeReoccurrence', 'Complexity',
-            'Challenges', 'Duration', 'Relevance', 'Urgency'
-        ]
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
+    df = pd.read_csv(file_path, dtype=str)
 
-        writer.writerow(data)
+    print(f"DataFrame:\n{df}")
+    print(f"Change ID to delete: {change_id}")
+
+    # 检查 changeId 是否在 DataFrame 中
+    if change_id not in df['changeId'].astype(str).values:
+        return jsonify({'status': 'error', 'message': 'Change ID not found.'})
+
+    # 删除匹配的行
+    df = df[df['changeId'].astype(str) != change_id]
+
+    # 写回 CSV 文件
+    df.to_csv(file_path, index=False, encoding='utf-8')
 
     return jsonify({'status': 'success'})
 

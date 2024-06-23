@@ -21,9 +21,6 @@ def initialize_data_csv(file_path, output_folder):
     change_attribute_columns = [
         'changeName', 'changeId', 'changeDescription', 'responsibility', 'timeframe', 'changeCause',
         'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
-        'ImpactOnInternal', 'ImpactOnExternal', 'Efforts', 'Costs', 'AvailableDataInformation',
-        'DependencyLevel', 'ChangePropagation', 'ChangeReoccurrence', 'Complexity',
-        'Challenges', 'Duration', 'Relevance', 'Urgency'
     ]
 
     digital_tools_columns = [
@@ -41,8 +38,7 @@ def initialize_data_csv(file_path, output_folder):
             # 打开输出文件并写入数据
             with open(dsm_output_file, mode='w', newline='', encoding='utf-8') as dsm_outfile, \
                     open(pa_pi_output_file, mode='w', newline='', encoding='utf-8') as pa_pi_outfile, \
-                    open(change_attribute_output_file, mode='w', newline='',
-                         encoding='utf-8') as change_attribute_outfile, \
+                    open(change_attribute_output_file, mode='w', newline='', encoding='utf-8') as change_attribute_outfile, \
                     open(digital_tools_output_file, mode='w', newline='', encoding='utf-8') as digital_tools_outfile:
                 dsm_writer = csv.DictWriter(dsm_outfile, fieldnames=dsm_fieldnames)
                 pa_pi_writer = csv.DictWriter(pa_pi_outfile, fieldnames=pa_pi_fieldnames)
@@ -63,14 +59,6 @@ def initialize_data_csv(file_path, output_folder):
                     pa_pi_row = {'Name': row['Name']}
                     pa_pi_row.update({col: '' for col in additional_columns})
                     pa_pi_writer.writerow(pa_pi_row)
-
-                    # 写入 change_attribute.csv
-                    change_attribute_row = {col: '' for col in change_attribute_columns}
-                    change_attribute_writer.writerow(change_attribute_row)
-
-                    # 写入 digital_tools.csv (Example content)
-                    digital_tools_row = {col: '' for col in digital_tools_columns}
-                    digital_tools_writer.writerow(digital_tools_row)
 
         print("CSV initialization completed successfully.")
     except FileNotFoundError:

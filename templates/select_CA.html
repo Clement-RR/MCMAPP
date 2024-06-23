@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+    <div class="label-container">
+        <input type="checkbox" id="impactOnInternal" {% if 'Impact on internal' in previous_CA_columns %}checked{% endif %}>
+        <label for="impactOnInternal" >Impact on internal</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="impactOnExternal" {% if 'Impact on external' in previous_CA_columns %}checked{% endif %}>
+        <label for="impactOnExternal" >Impact on external</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="efforts" {% if 'Efforts' in previous_CA_columns %}checked{% endif %}>
+        <label for="efforts" >Efforts</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="costs" {% if 'Costs' in previous_CA_columns %}checked{% endif %}>
+        <label for="costs" >Costs</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="availableDataInformation" {% if 'Available data/information' in previous_CA_columns %}checked{% endif %}>
+        <label for="availableDataInformation" >Available data/information</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="dependencyLevel" {% if 'Dependency level' in previous_CA_columns %}checked{% endif %}>
+        <label for="dependencyLevel" >Dependency level</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="changePropagation" {% if 'Change propagation' in previous_CA_columns %}checked{% endif %}>
+        <label for="changePropagation" >Change propagation</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="changeReoccurrence" {% if 'Change reoccurrence' in previous_CA_columns %}checked{% endif %}>
+        <label for="changeReoccurrence" >Change reoccurrence</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="complexity" {% if 'Complexity' in previous_CA_columns %}checked{% endif %}>
+        <label for="complexity" >Complexity</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="challenges" {% if 'Challenges' in previous_CA_columns %}checked{% endif %}>
+        <label for="challenges" >Challenges</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="duration" {% if 'Duration' in previous_CA_columns %}checked{% endif %}>
+        <label for="duration" >Duration</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="relevance" {% if 'Relevance' in previous_CA_columns %}checked{% endif %}>
+        <label for="relevance" >Relevance</label>
+    </div>
+
+    <div class="label-container">
+        <input type="checkbox" id="urgency" {% if 'Urgency' in previous_CA_columns %}checked{% endif %}>
+        <label for="urgency" >Urgency</label>
+    </div>
+
+    <button id="save">Save</button>
+    <button id="finish" onclick="window.location.href='{{ url_for('input_with_dsm') }}'">Finish</button>
+
+    <script>
+    document.getElementById('save').addEventListener('click', function() {
+            const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
+            const selectedLabels = [];
+
+            inputs.forEach(input => {
+                if (input.checked) {
+                    selectedLabels.push(input.nextElementSibling.innerText);
+                }
+            });
+
+            fetch('/select_change_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({labels: selectedLabels}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Attributes saved successfully.');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
