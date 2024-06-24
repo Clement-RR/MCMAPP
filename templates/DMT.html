@@ -8,51 +8,44 @@
         body {
             display: flex;
             justify-content: space-between;
-            height: 100vh;
             margin: 0;
             padding: 0;
         }
 
         #left-panel {
-            width: 20%;
+            width: 30%;
             padding: 20px;
             background-color: #f0f0f0;
             display: flex;
             flex-direction: column;
             gap: 10px; /* 添加间隔 */
-        }
-
-        #right-panel {
-            width: 75%;
-            padding: 20px;
-            background-color: #ffffff;
-            position: relative;
+            align-items: center;
         }
 
         .label-container {
             position: relative;
-            display: inline-block;
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
         }
 
         .label-container label {
             cursor: pointer;
             padding: 10px;
-            display: block;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            margin-left: 10px;
         }
 
-        .label-container input[type="checkbox"] {
-            display: none; /* 隐藏复选框 */
-        }
 
         .modal {
             display: none;
             position: fixed;
             z-index: 1;
-            left: 0;
+            right: 0;
             top: 0;
-            width: 100%;
+            width: 60%;
             height: 100%;
             overflow: auto;
             background-color: rgb(0,0,0);
@@ -92,22 +85,25 @@
     <div id="left-panel">
         <div class="label-container">
             <input type="checkbox" id="methode1">
-            <label for="methode1" onclick="showModal('images/image1.jpg')">
+            <label for="methode1" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
                 Methode1
             </label>
         </div>
         <div class="label-container">
             <input type="checkbox" id="methode2">
-            <label for="methode2" onclick="showModal('images/image2.jpg')">
+            <label for="methode2" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
                 Methode2
             </label>
         </div>
         <div class="label-container">
             <input type="checkbox" id="methode3">
-            <label for="methode3" onclick="showModal('images/image3.jpg')">
+            <label for="methode3" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
                 Methode3
             </label>
         </div>
+
+        <button id="save">Save</button>
+        <button id="finish" onclick="window.location.href='{{ url_for('input_with_dsm') }}'">Finish</button>
     </div>
 
     <div id="right-panel">
@@ -121,7 +117,9 @@
     </div>
 
     <script>
-        function showModal(imagePath) {
+        function showModal(event, imagePath) {
+            event.preventDefault(); // 阻止默认行为
+            event.stopPropagation(); // 阻止事件冒泡
             var modal = document.getElementById("myModal");
             var modalImage = document.getElementById("modalImage");
             modalImage.src = imagePath;
@@ -139,6 +137,33 @@
                 modal.style.display = "none";
             }
         }
+
+        document.getElementById('save').addEventListener('click', function() {
+            const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
+            const selectedLabels = [];
+
+            inputs.forEach(input => {
+                if (input.checked) {
+                    selectedLabels.push(input.nextElementSibling.innerText.trim());
+                }
+            });
+
+            fetch('/save_DMT', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({labels: selectedLabels}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Attributes saved successfully.');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
     </script>
 </body>
 </html>

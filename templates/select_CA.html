@@ -76,31 +76,31 @@
 
     <script>
     document.getElementById('save').addEventListener('click', function() {
-            const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
-            const selectedLabels = [];
+        const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
+        const selectedLabels = [];
 
-            inputs.forEach(input => {
-                if (input.checked) {
-                    selectedLabels.push(input.nextElementSibling.innerText);
-                }
-            });
-
-            fetch('/select_change_attribute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({labels: selectedLabels}),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                alert('Attributes saved successfully.');
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        inputs.forEach(input => {
+            if (input.checked) {
+                selectedLabels.push(input.nextElementSibling.innerText);
+            }
         });
+
+        fetch('/select_change_attribute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({labels: selectedLabels}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Attributes saved successfully.');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+});
     </script>
 </body>
 </html>

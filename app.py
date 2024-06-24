@@ -15,6 +15,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 CSV_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
 PA_PI_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'pa_pi.csv')
+DMT_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
 previous_CA_columns = []
 
 
@@ -288,6 +289,16 @@ def delete_change_attribute():
 
     return jsonify({'status': 'success'})
 
+@app.route('/save_DMT', methods=['POST'])
+def save_DMT():
+    data = request.get_json()
+    labels = data.get('labels', [])
+
+    # 创建 DataFrame 并保存到 CSV 文件
+    df = pd.DataFrame({'Selected Labels': labels})
+    df.to_csv(DMT_CSV_PATH, index=False, mode='a', header=not os.path.exists(DMT_CSV_PATH))
+
+    return jsonify({"status": "success", "message": "Attributes saved successfully."})
 
 if __name__ == '__main__':
     app.run(debug=True)

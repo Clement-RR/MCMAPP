@@ -23,9 +23,6 @@ def initialize_data_csv(file_path, output_folder):
         'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
     ]
 
-    digital_tools_columns = [
-        'Change', 'Here', 'Later'
-    ]
     try:
         with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
             reader = csv.DictReader(infile)
@@ -43,12 +40,11 @@ def initialize_data_csv(file_path, output_folder):
                 dsm_writer = csv.DictWriter(dsm_outfile, fieldnames=dsm_fieldnames)
                 pa_pi_writer = csv.DictWriter(pa_pi_outfile, fieldnames=pa_pi_fieldnames)
                 change_attribute_writer = csv.DictWriter(change_attribute_outfile, fieldnames=change_attribute_columns)
-                digital_tools_writer = csv.DictWriter(digital_tools_outfile, fieldnames=digital_tools_columns)
+                digital_tools_writer = csv.writer(digital_tools_outfile)
 
                 dsm_writer.writeheader()
                 pa_pi_writer.writeheader()
                 change_attribute_writer.writeheader()
-                digital_tools_writer.writeheader()
 
                 for row in reader:
                     # 写入 dsm.csv
