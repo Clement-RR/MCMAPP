@@ -48,9 +48,7 @@
             <label for="uploadFile" class="button">Upload File</label>
         </form>
         <button id="generateBPMN" class="button">Generate BPMN</button>
-        <button id="input_PA_PI" class="button">Input PA & PI</button>
-        <button id="select_CA" class="button">Select CA</button>
-        <button id="DMT" class="button">Select methods and digital tools</button>
+        <button id="next" class="button">Next</button>
         <div id="message"></div>
 
     </main>
@@ -96,17 +94,10 @@
             });
         });
 
-        document.getElementById('input_PA_PI').addEventListener('click', function() {
+        document.getElementById('next').addEventListener('click', function() {
             window.location.href = '/input_pa_pis';
         });
 
-        document.getElementById('select_CA').addEventListener('click', function() {
-            window.location.href = '/select_CA';
-        });
-
-        document.getElementById('DMT').addEventListener('click', function() {
-            window.location.href = '/DMT';
-        });
     </script>
 </body>
 </html>

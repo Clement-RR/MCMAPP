@@ -36,6 +36,10 @@ def initialize_previous_columns():
 def home():
     return render_template('start_page.html')
 
+@app.route('/start_page')
+def start_page():
+    return render_template('start_page.html')
+
 
 @app.route('/initialization')
 def initialization():
