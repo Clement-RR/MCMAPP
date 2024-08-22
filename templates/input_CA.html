@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <title>Input_CA</title>
     <script>
+        const previous_CA_columns = {{ previous_CA_columns | tojson }};
         // 在页面加载完成后运行此函数
         window.onload = function() {
             createDropdowns();
+            loadChangeAttributeData();
         };
 
         // 此函数负责创建所有的下拉菜单
@@ -17,6 +19,8 @@
             dropdownPlaces.forEach(function(container) {
                 const select = document.createElement('select'); // 创建select元素
                 select.id = container.id ; // 为select元素创建一个基于容器id的唯一id
+
+
                 // 添加选项1到9
                 for (let i = 0; i <= 9; i++) {
                     const option = document.createElement('option'); // 创建option元素
@@ -24,8 +28,48 @@
                     option.textContent = i;
                     select.appendChild(option); // 将option添加到select中
                 }
+
+                if (!previous_CA_columns.includes(container.id)) {
+                    select.disabled = true; // 禁用select元素
+                }
                 container.prepend(select); // 将select添加到当前容器中
             });
+        }
+
+        function loadChangeAttributeData() {
+            fetch('/get_change_attribute_data')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data received:', data);
+                    if (data.length > 0) {
+                        const changeData = data[0];  // 假设只需要第一条记录
+                        console.log('Change data to populate:', changeData)
+                        document.getElementById('changeName').value = changeData.changeName || '';
+                        document.getElementById('changeId').value = changeData.changeId || '';
+                        document.getElementById('changeDescription').value = changeData.changeDescription || '';
+                        document.getElementById('responsibility').value = changeData.responsibility || '';
+                        document.getElementById('timeframe').value = changeData.timeframe || '';
+                        document.getElementById('changeCause').value = changeData.changeCause || '';
+                        document.getElementById('localization').value = changeData.localization || '';
+                        document.getElementById('departments').value = changeData.departments || '';
+                        document.getElementById('changeStatus').value = changeData.changeStatus || '';
+                        document.getElementById('timeOfOccurrence').value = changeData.timeOfOccurrence || '';
+                        document.getElementById('lessonsLearned').value = changeData.lessonsLearned || '';
+
+                        const dropdownPlaces = document.querySelectorAll('.dropdown-container');
+                        dropdownPlaces.forEach(container => {
+                            const selectElement = container.querySelector('select');
+                            if (selectElement) {
+                                selectElement.value = changeData[container.id] || '0';
+                            }
+                        });
+                    }else {
+                        console.log('No data available to populate form.');  // 调试输出
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading change attribute data:', error);
+                });
         }
 
         function saveData() {
@@ -40,21 +84,29 @@
                 departments: document.getElementById('departments').value.toString(),
                 changeStatus: document.getElementById('changeStatus').value.toString(),
                 timeOfOccurrence: document.getElementById('timeOfOccurrence').value.toString(),
-                lessonsLearned: document.getElementById('lessonsLearned').value.toString(),
-                ImpactOnInternal: document.getElementById('ImpactOnInternal').querySelector('select').value,
-                ImpactOnExternal: document.getElementById('ImpactOnExternal').querySelector('select').value,
-                Efforts: document.getElementById('Efforts').querySelector('select').value,
-                Costs: document.getElementById('Costs').querySelector('select').value,
-                AvailableDataInformation: document.getElementById('AvailableDataInformation').querySelector('select').value,
-                DependencyLevel: document.getElementById('DependencyLevel').querySelector('select').value,
-                ChangePropagation: document.getElementById('ChangePropagation').querySelector('select').value,
-                ChangeReoccurrence: document.getElementById('ChangeReoccurrence').querySelector('select').value,
-                Complexity: document.getElementById('Complexity').querySelector('select').value,
-                Challenges: document.getElementById('Challenges').querySelector('select').value,
-                Duration: document.getElementById('Duration').querySelector('select').value,
-                Relevance: document.getElementById('Relevance').querySelector('select').value,
-                Urgency: document.getElementById('Urgency').querySelector('select').value
+                lessonsLearned: document.getElementById('lessonsLearned').value.toString()
             };
+
+            const allFields = [
+            'impactOnInternal', 'impactOnExternal', 'efforts', 'costs', 'availableDataInformation',
+            'dependencyLevel', 'changePropagation', 'changeReoccurrence', 'complexity', 'challenges',
+            'duration', 'relevance', 'urgency'
+            ];
+
+            // 设置默认值为0
+            allFields.forEach(field => {
+                data[field] = '0';
+            });
+
+            const dropdownPlaces = document.querySelectorAll('.dropdown-container');
+
+            dropdownPlaces.forEach(container => {
+                const selectElement = container.querySelector('select');
+                if (selectElement) {
+                    data[container.id] = selectElement.value;
+                }
+            });
+
 
             fetch('/save_change_attribute', {
                 method: 'POST',
@@ -77,39 +129,54 @@
             .catch(error => console.error('Error:', error));
         }
 
-        window.onload = function() {
-            createDropdowns();
-        };
+        function deleteChange() {
+            fetch('/delete_change_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Data deleted successfully.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
     </script>
 
     <style>
         body {
-            display: flex; /* 定义为 flex 容器 */
+            display: flex;
+            flex-direction: row; /* 确保左右面板水平排列 */
             height: 100vh;
-            margin: 0; /* 移除默认的 margin */
+            margin: 0;
             background-color: #f0f0f0;
         }
-        #leftPanel {
-            width: 50%; /* 左侧面板占据50%的宽度 */
-            height: 100%; /* 全高 */
+        #leftPanel, #rightPanel {
+            width: 50%; /* 左右面板各占50%的宽度 */
+            height: 100%;
             display: flex;
-            flex-direction: column; /* 子元素垂直排列 */
+            flex-direction: column;
         }
         #Specification, #Coordination {
-            flex: 1; /* 平分 leftPanel */
+            flex: 1;
             display: flex;
-            flex-direction: column; /* 子元素垂直排列 */
-            justify-content: space-around; /* 在区域内均匀分布 */
-            padding: 20px; /* 留出内边距 */
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 20px;
         }
         #rightPanel {
-            width: 50%; /* 右侧面板也占据50%的宽度 */
-            height: 100%; /* 全高 */
-            display: flex;
-            flex-direction: column; /* 子元素垂直排列 */
-            justify-content: space-around; /* 子元素均匀分布 */
-            align-items: flex-start;  /* 子元素左端对齐 */
-            padding: 40px 20px; /* 留出上下和左右内边距 */
+            justify-content: space-around;
+            align-items: flex-start;
+            padding: 40px 20px;
         }
         .input-container {
             margin-bottom: 15px;
@@ -122,22 +189,11 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Left panel -->
     <div id="leftPanel">
-        <div id="table">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>Change Name</th>
-                        <th>Change ID</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+
         <!-- Specification -->
         <div id="Specification">
             <div class="input-container">
@@ -193,105 +249,66 @@
 
     <!-- Right panel -->
     <div id="rightPanel">
-        <div class="dropdown-container" id="ImpactOnInternal">
-                <label for="ImpactOnInternal">Impact on internal</label>
+        <div class="dropdown-container" id="impactOnInternal">
+                <label for="impactOnInternal">Impact on internal</label>
         </div>
 
-        <div class="dropdown-container" id="ImpactOnExternal">
-                <label for="ImpactOnInternal">Impact on external</label>
+        <div class="dropdown-container" id="impactOnExternal">
+                <label for="impactOnInternal">Impact on external</label>
         </div>
 
-        <div class="dropdown-container" id="Efforts">
-                <label for="Efforts">Efforts</label>
+        <div class="dropdown-container" id="efforts">
+                <label for="efforts">Efforts</label>
         </div>
 
-        <div class="dropdown-container" id="Costs">
-                <label for="Costs">Costs</label>
+        <div class="dropdown-container" id="costs">
+                <label for="costs">Costs</label>
         </div>
 
-        <div class="dropdown-container" id="AvailableDataInformation">
-                <label for="AvailableDataInformation">Available data/information</label>
+        <div class="dropdown-container" id="availableDataInformation">
+                <label for="availableDataInformation">Available data/information</label>
         </div>
 
-        <div class="dropdown-container" id="DependencyLevel">
-                <label for="DependencyLevel">Dependency level</label>
+        <div class="dropdown-container" id="dependencyLevel">
+                <label for="dependencyLevel">Dependency level</label>
         </div>
 
-        <div class="dropdown-container" id="ChangePropagation">
-                <label for="ChangePropagation">Change propagation</label>
+        <div class="dropdown-container" id="changePropagation">
+                <label for="changePropagation">Change propagation</label>
         </div>
 
-        <div class="dropdown-container" id="ChangeReoccurrence">
-                <label for="ChangeReoccurrence">Change reoccurrence</label>
+        <div class="dropdown-container" id="changeReoccurrence">
+                <label for="changeReoccurrence">Change reoccurrence</label>
         </div>
 
-        <div class="dropdown-container" id="Complexity">
-                <label for="Complexity">Complexity</label>
+        <div class="dropdown-container" id="complexity">
+                <label for="complexity">Complexity</label>
         </div>
 
-        <div class="dropdown-container" id="Challenges">
-                <label for="Challenges">Challenges</label>
+        <div class="dropdown-container" id="challenges">
+                <label for="challenges">Challenges</label>
         </div>
 
-        <div class="dropdown-container" id="Duration">
-                <label for="Duration">Duration</label>
+        <div class="dropdown-container" id="duration">
+                <label for="duration">Duration</label>
         </div>
 
-        <div class="dropdown-container" id="Relevance">
-                <label for="Relevance">Relevance</label>
+        <div class="dropdown-container" id="relevance">
+                <label for="relevance">Relevance</label>
         </div>
 
-        <div class="dropdown-container" id="Urgency">
-                <label for="Urgency">Urgency</label>
+        <div class="dropdown-container" id="urgency">
+                <label for="urgency">Urgency</label>
         </div>
 
         <button id="save" onclick="saveData()">Save</button>
-        <button id="finish" onclick="window.location.href='{{ url_for('input_with_dsm') }}'">Finish</button>
+        <button id="deleteChange" onclick="deleteChange()">Delete</button>
+        <button id="finish" onclick="window.location.href='{{ url_for('result') }}'">Finish</button>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('/get_change_attribute')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Data received:', data);  // 输出接收到的数据进行调试
-                const tableBody = document.querySelector('#dataTable tbody');
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.changeName}</td>
-                        <td>${row.changeId}</td>
-                        <td><button onclick="deleteRow('${row.changeId}')">Delete</button></td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    });
 
-function deleteRow(changeId) {
-    fetch('/delete_change_attribute', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ changeId: changeId.toString() })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('Row deleted successfully.');
-            location.reload();  // 删除成功后刷新页面
-        } else {
-            alert('Error deleting row: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-</script>
+    </script>
+
 </body>
 </html>

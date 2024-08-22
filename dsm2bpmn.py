@@ -90,6 +90,7 @@ def generate_bpmn_svg(file_path, output_svg_path):
 
     # 初始化位置字典
     positions = {}
+    horizontal_spacing = 2
     for swimlane, elements in swimlanes.items():
         start_y = start_y_positions[swimlane] + 2.5
         for element in elements:
@@ -104,13 +105,13 @@ def generate_bpmn_svg(file_path, output_svg_path):
         if len(target_elements) == 1:
             if outgoing_element in positions:
                 old_x, old_y = positions[outgoing_element]
-                positions[target_elements[0]] = (old_x + 2, old_y)
+                positions[target_elements[0]] = (old_x + horizontal_spacing, old_y)
         elif len(target_elements) > 1:
             old_x, old_y = positions[outgoing_element]
             delta = 1.5
             mid_index = len(target_elements) // 2
             for i, target_element in enumerate(target_elements):
-                positions[target_element] = (old_x + 2, old_y + (i - mid_index) * delta)
+                positions[target_element] = (old_x + horizontal_spacing, old_y + (i - mid_index) * delta)
 
     message_flows = {}
     for index, row in dsm_df.iterrows():

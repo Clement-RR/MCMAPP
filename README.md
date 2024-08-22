@@ -1,6 +1,22 @@
 # MCMapp
 
 # To be finished
+07.08
+1. 更改生产bpmn图形的bug
+2. 点击svg图形的bug
+2.1. 点击图标变色
+2.2. 已储存数据的图标变色
+2.3. 点击gate和start-和endevent无效果
+3. 测试生成changeCA的csv文件
+4. 测试生成M&DT的csv文件
+5. 新建了setting文件夹，用于存放关系矩阵csv
+6. 通过图标上传和更新setting文件
+7. 结果展示
+7.1 运行correlation算法，可以得到3个结果
+        1.与change关联性高的process（可以用黄色表示）
+        2.为高关联性process分配M&DT
+        3.需要变更的步骤
+
 16.06
 1. Change ID的唯一性
 2. 添加view功能显示已编辑的Change attribute

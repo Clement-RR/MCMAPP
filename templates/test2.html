@@ -2,113 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Table with Modal</title>
+    <title>Checkbox with Tooltip</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .label-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 10px;
         }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .modal {
+
+        .tooltip {
             display: none;
-            position: fixed;
+            position: absolute;
+            left: 30%;
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            white-space: nowrap;
             z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
+            margin-left: 10px;
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -5px;
+            transform: translateY(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent #333 transparent transparent;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+
+        .label-container label {
             cursor: pointer;
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
+    <div class="label-container">
+        <input type="checkbox" id="impactOnInternal" {% if 'impactOnInternal' in previous_CA_columns %}checked{% endif %}>
+        <label for="impactOnInternal" onclick="showTooltip(event, 'tooltip1')">Impact on internal</label>
+        <span id="tooltip1" class="tooltip">This is the tooltip for impact on internal.</span>
+    </div>
 
-<h2>Interactive Table with Modal Example</h2>
+    <div class="label-container">
+        <input type="checkbox" id="impactOnExternal" {% if 'impactOnExternal' in previous_CA_columns %}checked{% endif %}>
+        <label for="impactOnExternal" onclick="showTooltip(event, 'tooltip2')">Impact on external</label>
+        <span id="tooltip2" class="tooltip">This is the tooltip for impact on external.</span>
+    </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>1</td>
-            <td>John Doe</td>
-            <td>john@example.com</td>
-            <td><button onclick="openModal('1', 'John Doe', 'john@example.com')">View</button></td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Jane Smith</td>
-            <td>jane@example.com</td>
-            <td><button onclick="openModal('2', 'Jane Smith', 'jane@example.com')">View</button></td>
-        </tr>
-    </tbody>
-</table>
+    <!-- Add more label-container divs as needed -->
 
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Row Details</h2>
-    <p id="modalContent"></p>
-  </div>
-</div>
+    <button id="save">Save</button>
+    <button id="next" onclick="window.location.href='{{ url_for('DMT') }}'">Next</button>
 
-<script>
-    function openModal(id, name, email) {
-        var modal = document.getElementById("myModal");
-        var modalContent = document.getElementById("modalContent");
-        modalContent.innerHTML = `<strong>ID:</strong> ${id} <br> <strong>Name:</strong> ${name} <br> <strong>Email:</strong> ${email}`;
-        modal.style.display = "block";
-    }
+    <script>
+    let activeTooltip = null;
 
-    var span = document.getElementsByClassName("close")[0];
+    document.getElementById('save').addEventListener('click', function() {
+        const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
+        const selectedIds = [];
 
-    span.onclick = function() {
-        var modal = document.getElementById("myModal");
-        modal.style.display = "none";
-    }
+        inputs.forEach(input => {
+            if (input.checked) {
+                selectedIds.push(input.id);
+            }
+        });
 
-    window.onclick = function(event) {
-        var modal = document.getElementById("myModal");
-        if (event.target == modal) {
-            modal.style.display = "none";
+        fetch('/select_change_attribute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ids: selectedIds}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Attributes saved successfully.');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    function showTooltip(event, tooltipId) {
+        event.preventDefault();
+
+        if (activeTooltip) {
+            activeTooltip.style.display = 'none';
+        }
+
+        const tooltip = document.getElementById(tooltipId);
+        tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+
+        if (tooltip.style.display === 'block') {
+            activeTooltip = tooltip;
+        } else {
+            activeTooltip = null;
         }
     }
-</script>
 
+    document.addEventListener('click', function(event) {
+        if (activeTooltip && !event.target.closest('.label-container')) {
+            activeTooltip.style.display = 'none';
+            activeTooltip = null;
+        }
+    });
+    </script>
 </body>
 </html>

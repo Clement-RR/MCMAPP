@@ -1,1 +1,2 @@
-changeName,changeId,changeDescription,responsibility,timeframe,changeCause,localization,departments,changeStatus,timeOfOccurrence,lessonsLearned,Impact on internal,Efforts,Available data/information,Challenges,Duration,Relevance
+changeName,changeId,changeDescription,responsibility,timeframe,changeCause,localization,departments,changeStatus,timeOfOccurrence,lessonsLearned,impactOnInternal,impactOnExternal,efforts,costs,availableDataInformation,dependencyLevel,changePropagation,changeReoccurrence,complexity,challenges,duration,relevance,urgency
+,,,,,,,,,,,5,5,8,3,6,9,4,3,6,3,5,7,9

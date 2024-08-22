@@ -3,85 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .label-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            left: 30%;
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            z-index: 1;
+            margin-left: 10px;
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -5px;
+            transform: translateY(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent #333 transparent transparent;
+        }
+
+        .label-container label {
+            cursor: pointer;
+            margin-left: 5px;
+        }
+    </style>
 
 </head>
 <body>
     <div class="label-container">
-        <input type="checkbox" id="impactOnInternal" {% if 'Impact on internal' in previous_CA_columns %}checked{% endif %}>
-        <label for="impactOnInternal" >Impact on internal</label>
+        <input type="checkbox" id="impactOnInternal" {% if 'impactOnInternal' in previous_CA_columns %}checked{% endif %}>
+        <label for="impactOnInternal" onclick="showTooltip(event, 'tooltip1')">Impact on internal</label>
+        <span id="tooltip1" class="tooltip">How are different internal elements affected by the MC?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="impactOnExternal" {% if 'Impact on external' in previous_CA_columns %}checked{% endif %}>
-        <label for="impactOnExternal" >Impact on external</label>
+        <input type="checkbox" id="impactOnExternal" {% if 'impactOnExternal' in previous_CA_columns %}checked{% endif %}>
+        <label for="impactOnExternal" onclick="showTooltip(event, 'tooltip2')">Impact on external</label>
+        <span id="tooltip2" class="tooltip">How are different external elements affected by the MC?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="efforts" {% if 'Efforts' in previous_CA_columns %}checked{% endif %}>
-        <label for="efforts" >Efforts</label>
+        <input type="checkbox" id="efforts" {% if 'efforts' in previous_CA_columns %}checked{% endif %}>
+        <label for="efforts" onclick="showTooltip(event, 'tooltip3')">Efforts</label>
+        <span id="tooltip3" class="tooltip">How much effort is required to implement the change?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="costs" {% if 'Costs' in previous_CA_columns %}checked{% endif %}>
-        <label for="costs" >Costs</label>
+        <input type="checkbox" id="costs" {% if 'costs' in previous_CA_columns %}checked{% endif %}>
+        <label for="costs" onclick="showTooltip(event, 'tooltip4')">Costs</label>
+        <span id="tooltip4" class="tooltip">How high are the expected costs of the change?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="availableDataInformation" {% if 'Available data/information' in previous_CA_columns %}checked{% endif %}>
-        <label for="availableDataInformation" >Available data/information</label>
+        <input type="checkbox" id="availableDataInformation" {% if 'availableDataInformation' in previous_CA_columns %}checked{% endif %}>
+        <label for="availableDataInformation" onclick="showTooltip(event, 'tooltip5')">Available data/information</label>
+        <span id="tooltip5" class="tooltip">How much data/information already exists about this or similar changes?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="dependencyLevel" {% if 'Dependency level' in previous_CA_columns %}checked{% endif %}>
-        <label for="dependencyLevel" >Dependency level</label>
+        <input type="checkbox" id="dependencyLevel" {% if 'dependencylevel' in previous_CA_columns %}checked{% endif %}>
+        <label for="dependencyLevel" onclick="showTooltip(event, 'tooltip6')">Dependency level</label>
+        <span id="tooltip6" class="tooltip">How strong are the dependencies between past changes and the current change?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="changePropagation" {% if 'Change propagation' in previous_CA_columns %}checked{% endif %}>
-        <label for="changePropagation" >Change propagation</label>
+        <input type="checkbox" id="changePropagation" {% if 'changepropagation' in previous_CA_columns %}checked{% endif %}>
+        <label for="changePropagation" onclick="showTooltip(event, 'tooltip7')">Change propagation</label>
+        <span id="tooltip7" class="tooltip">How likely is it that another change will occur as a result of this change?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="changeReoccurrence" {% if 'Change reoccurrence' in previous_CA_columns %}checked{% endif %}>
-        <label for="changeReoccurrence" >Change reoccurrence</label>
+        <input type="checkbox" id="changeReoccurrence" {% if 'changeReoccurrence' in previous_CA_columns %}checked{% endif %}>
+        <label for="changeReoccurrence" onclick="showTooltip(event, 'tooltip8')">Change reoccurrence</label>
+        <span id="tooltip8" class="tooltip">What is the probability that the change will occur again?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="complexity" {% if 'Complexity' in previous_CA_columns %}checked{% endif %}>
-        <label for="complexity" >Complexity</label>
+        <input type="checkbox" id="complexity" {% if 'complexity' in previous_CA_columns %}checked{% endif %}>
+        <label for="complexity" onclick="showTooltip(event, 'tooltip9')">Complexity</label>
+        <span id="tooltip9" class="tooltip">How complex is the change and what are consequences?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="challenges" {% if 'Challenges' in previous_CA_columns %}checked{% endif %}>
-        <label for="challenges" >Challenges</label>
+        <input type="checkbox" id="challenges" {% if 'challenges' in previous_CA_columns %}checked{% endif %}>
+        <label for="challenges" onclick="showTooltip(event, 'tooltip10')">Challenges</label>
+        <span id="tooltip10" class="tooltip">What are the expected challenges?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="duration" {% if 'Duration' in previous_CA_columns %}checked{% endif %}>
-        <label for="duration" >Duration</label>
+        <input type="checkbox" id="duration" {% if 'duration' in previous_CA_columns %}checked{% endif %}>
+        <label for="duration" onclick="showTooltip(event, 'tooltip11')">Duration</label>
+        <span id="tooltip11" class="tooltip">What is the expected duration of the MC?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="relevance" {% if 'Relevance' in previous_CA_columns %}checked{% endif %}>
-        <label for="relevance" >Relevance</label>
+        <input type="checkbox" id="relevance" {% if 'relevance' in previous_CA_columns %}checked{% endif %}>
+        <label for="relevance" onclick="showTooltip(event, 'tooltip12')">Relevance</label>
+        <span id="tooltip12" class="tooltip">What is the relevance of the MC?</span>
     </div>
 
     <div class="label-container">
-        <input type="checkbox" id="urgency" {% if 'Urgency' in previous_CA_columns %}checked{% endif %}>
-        <label for="urgency" >Urgency</label>
+        <input type="checkbox" id="urgency" {% if 'urgency' in previous_CA_columns %}checked{% endif %}>
+        <label for="urgency" onclick="showTooltip(event, 'tooltip13')">Urgency</label>
+        <span id="tooltip13" class="tooltip">What is the urgency of the MC?</span>
     </div>
 
     <button id="save">Save</button>
     <button id="next" onclick="window.location.href='{{ url_for('DMT') }}'">Next</button>
 
     <script>
+    let activeTooltip = null;
+
     document.getElementById('save').addEventListener('click', function() {
         const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
-        const selectedLabels = [];
+        const selectedIds = [];
 
         inputs.forEach(input => {
             if (input.checked) {
-                selectedLabels.push(input.nextElementSibling.innerText);
+                selectedIds.push(input.id);
             }
         });
 
@@ -90,7 +142,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({labels: selectedLabels}),
+            body: JSON.stringify({ids: selectedIds}),
         })
         .then(response => response.json())
         .then(data => {
@@ -100,7 +152,32 @@
         .catch((error) => {
             console.error('Error:', error);
         });
-});
+    });
+
+    function showTooltip(event, tooltipId) {
+        event.preventDefault();
+        const tooltip = document.getElementById(tooltipId);
+
+        if (activeTooltip && activeTooltip !== tooltip) {
+            activeTooltip.style.display = 'none';
+        }
+
+        if (tooltip.style.display === 'block') {
+            tooltip.style.display = 'none';
+            activeTooltip = null;
+        } else {
+            tooltip.style.display = 'block';
+            activeTooltip = tooltip;
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        if (activeTooltip && !event.target.closest('.label-container')) {
+            activeTooltip.style.display = 'none';
+            activeTooltip = null;
+        }
+    });
+
     </script>
 </body>
 </html>

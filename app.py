@@ -2,35 +2,46 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 import pandas as pd
 import os
 import time
-from dsm2bpmn import initialize_data_csv, generate_bpmn_svg
+import service
 from werkzeug.utils import secure_filename
+import numpy as np
 import csv
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # 用于闪现消息
+app.secret_key = 'supersecretkey'
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+SETTING_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
+app.config['SETTING_FOLDER'] = SETTING_FOLDER
 CSV_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
 PA_PI_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'pa_pi.csv')
 DMT_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
+SELECTED_CA_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'selected_CA.csv')
 previous_CA_columns = []
+selected_MDT = []
 
-
-change_attribute_columns = [
-    'changeName', 'changeId', 'changeDescription', 'responsibility', 'timeframe', 'changeCause',
-    'localization', 'departments', 'changeStatus', 'timeOfOccurrence', 'lessonsLearned',
-]
 
 def initialize_previous_columns():
     global previous_CA_columns
-    if os.path.exists(CSV_FILE_PATH):
-        existing_df = pd.read_csv(CSV_FILE_PATH)
-        # 过滤出非预定义的列标签
-        previous_CA_columns = [col for col in existing_df.columns if col not in change_attribute_columns]
+    if os.path.exists(SELECTED_CA_FILE_PATH):
+        if os.path.getsize(SELECTED_CA_FILE_PATH) > 0:
+            existing_df = pd.read_csv(SELECTED_CA_FILE_PATH)
+            previous_CA_columns = list(existing_df.columns)
+        else:
+            previous_CA_columns = []
+    else:
+        previous_CA_columns = []
 
+def load_selected_MDT():
+    global selected_MDT
+    if os.path.exists(DMT_CSV_PATH):
+        df = pd.read_csv(DMT_CSV_PATH, header=None, names=['label', 'value'])
+        selected_MDT = df[df['value'] == 1]['label'].tolist()
+    else:
+        selected_MDT = []
 
 @app.route('/')
 def home():
@@ -50,7 +61,7 @@ def input_with_dsm():
     return render_template('input_with_dsm.html')
 
 @app.route('/input_pa_pis')
-def step2_input_pa_pis():
+def input_pa_pis():
     return render_template('input_papi.html')
 
 @app.route('/select_CA')
@@ -61,11 +72,34 @@ def select_CA():
 
 @app.route('/DMT')
 def DMT():
-    return render_template('DMT.html')
+    load_selected_MDT()
+    return render_template('DMT.html', selected_MDT=selected_MDT)
 
 @app.route('/input_CA')
 def input_CA():
-    return render_template('input_CA.html')
+    initialize_previous_columns()
+    return render_template('input_CA.html', previous_CA_columns=previous_CA_columns)
+
+@app.route('/result')
+def result():
+    dmm_process_file = os.path.join(UPLOAD_FOLDER, 'pa_pi.csv')
+    dmm_change_file = os.path.join(UPLOAD_FOLDER, 'change_vector.csv')
+    selected_M_DT_file = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
+    dmm_pa_ca_file = os.path.join(SETTING_FOLDER, 'DMM_PA_CA.csv')
+    dmm_methode_file = os.path.join(SETTING_FOLDER, 'DMM_Methode.csv')
+    dmm_dt_file = os.path.join(SETTING_FOLDER, 'DMM_DT.csv')
+    dmm_change_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_CA_MDT.csv')
+    dmm_process_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_PA_MDT.csv')
+
+    max_vector_change, combined_result, name_color_dict = service.correlation_analysis(
+        dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file,
+        dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file
+    )
+    combined_result_filtered = combined_result[
+        ['Name', 'Methode_1', 'methode_value_1', 'Methode_2', 'methode_value_2', 'DT_1', 'DT_value_1', 'DT_2',
+         'DT_value_2']]
+    return render_template('result.html', max_vector_change=max_vector_change,
+                           combined_result=combined_result_filtered.to_html(index=False), name_color_dict=name_color_dict)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -78,7 +112,7 @@ def upload():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        session['uploaded_file'] = filename  # 保存上传的文件名到 session
+        session['uploaded_file'] = filename
         return jsonify({'message': 'File successfully uploaded'}), 200
     return jsonify({'message': 'File upload failed'}), 400
 
@@ -88,11 +122,11 @@ def generate_bpmn():
         if 'uploaded_file' not in session:
             return jsonify({'message': 'No file uploaded'}), 400
         filename = session['uploaded_file']
-        input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # 这里需要根据实际情况修改
+        input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         output_folder = app.config['UPLOAD_FOLDER']
         output_svg_path = os.path.join(app.config['OUTPUT_FOLDER'], 'bpmn.svg')
-        initialize_data_csv(input_file_path, output_folder)
-        generate_bpmn_svg(input_file_path, output_svg_path)
+        service.initialize_data_csv(input_file_path, output_folder)
+        service.generate_bpmn_svg(input_file_path, output_svg_path)
         return jsonify({'message': 'BPMN successfully generated'}), 200
     except Exception as e:
         return jsonify({'message': f'Error generating BPMN: {e}'}), 500
@@ -104,7 +138,7 @@ def get_pa_pi_data():
         pa_pi_df = pd.read_csv(PA_PI_CSV_PATH)
         if node_id in pa_pi_df['Name'].values:
             node_data = pa_pi_df.loc[pa_pi_df['Name'] == node_id].to_dict(orient='records')[0]
-            # 将空值替换为0
+            # replace none with 0
             node_data = {k: (0 if pd.isna(v) else v) for k, v in node_data.items()}
             return jsonify(node_data)
     return jsonify({"message": "Node data not found"}), 404
@@ -138,7 +172,7 @@ def update_data():
                     if item['id'] in df.columns:
                         df.at[row_index[0], item['id']] = int(item['value'])
                 print("DataFrame after update:", df.head())
-                # 写回 CSV 文件并刷新文件系统缓冲区
+                # write back data and refresh
                 with open(file_path, 'w') as f:
                     df.to_csv(f, index=False)
                     f.flush()
@@ -201,106 +235,71 @@ def delete_data():
 def select_change_attribute():
     global previous_CA_columns
     data = request.get_json()
-    if data and 'labels' in data:
-        labels = data['labels']
+    if data and 'ids' in data:
+        ids = data['ids']
 
-        if os.path.exists(CSV_FILE_PATH):
-            # 如果CSV文件存在，则读取现有的列标签
-            existing_df = pd.read_csv(CSV_FILE_PATH)
-            existing_CA_columns = list(existing_df.columns)
-        else:
-            # 如果CSV文件不存在，则初始化为空列表
-            existing_CA_columns = []
-
-        # 移除上一次写入的列标题
-        for col in previous_CA_columns:
-            if col in existing_CA_columns:
-                existing_CA_columns.remove(col)
-
-        previous_CA_columns = labels
+        # 更新 previous_CA_columns
+        previous_CA_columns = ids
         print(previous_CA_columns)
-        # 合并现有列标签和新标签，去重
-        new_columns = existing_CA_columns + labels
 
-        # 创建一个新的DataFrame，只包含合并后的列标签
-        df = pd.DataFrame(columns=new_columns)
-
-        # 保存到CSV文件
-        df.to_csv(CSV_FILE_PATH, index=False)
+        # 现在将传入的数据保存到selected_CA.csv文件，覆盖之前的内容
+        selected_data_df = pd.DataFrame(columns=ids)
+        selected_data_df.to_csv(SELECTED_CA_FILE_PATH, index=False, mode='w')
 
         return jsonify({"message": "Attributes saved successfully."})
     return jsonify({"message": "No labels received."})
 
+CHANGE_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_vector.csv')
 @app.route('/save_change_attribute', methods=['POST'])
 def save_change_attribute():
     data = request.get_json()
     data = {key: str(value) for key, value in data.items()}
-    change_id = data['changeId']
-    file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
-    new_entry = pd.DataFrame([data])
+    file_path = CSV_FILE_PATH
 
-    # 如果文件存在，则读取现有数据并追加新的数据
-    if os.path.isfile(file_path):
-        existing_data = pd.read_csv(file_path, dtype=str)
-        if change_id in existing_data['changeId'].values:
-            return jsonify({'status': 'error', 'message': 'Change ID already exists.'})
-        combined_data = pd.concat([existing_data, new_entry], ignore_index=True)
-    else:
-        combined_data = new_entry
-
-    # 写回 CSV 文件
-    combined_data.to_csv(file_path, index=False, encoding='utf-8')
-
+    new_data_df = pd.DataFrame([data])
+    new_data_df.to_csv(file_path, index=False, encoding='utf-8')
+    filtered_data = {key: value for i, (key, value) in enumerate(data.items()) if i >= 11}
+    filtered_data_df = pd.DataFrame([filtered_data])
+    filtered_data_df.to_csv(CHANGE_FILE_PATH, index=False, encoding='utf-8')
     return jsonify({'status': 'success'})
 
-@app.route('/get_change_attribute', methods=['GET'])
-def get_change_attribute():
-    file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
-    print(f"File path: {file_path}")  # 输出文件路径
-    if os.path.exists(file_path):
-        df = pd.read_csv(file_path, dtype=str)
-        print(df.head())  # 打印前几行数据进行调试
-        data = df[['changeName', 'changeId']].to_dict(orient='records')
-        print(data)  # 打印数据进行调试
+@app.route('/get_change_attribute_data', methods=['GET'])
+def get_change_attribute_data():
+    if os.path.exists(CSV_FILE_PATH) and os.path.getsize(CSV_FILE_PATH) > 0:
+        df = pd.read_csv(CSV_FILE_PATH).replace({np.nan: None})
+        data = df.to_dict(orient='records')
+        print("Data sent to frontend:", data)
         return jsonify(data)
     else:
-        print("File not found")
         return jsonify([])
 
 @app.route('/delete_change_attribute', methods=['POST'])
 def delete_change_attribute():
-    data = request.get_json()
-    change_id = str(data.get('changeId'))
-
-    file_path = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
-    if not os.path.isfile(file_path):
+    file_path = CSV_FILE_PATH
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+        df = pd.read_csv(file_path)
+        if not df.empty:
+            # 删除第一行
+            df = df.iloc[1:]
+            df.to_csv(file_path, index=False, encoding='utf-8')
+            return jsonify({'status': 'success', 'message': 'Data deleted successfully.'})
+        else:
+            return jsonify({'status': 'error', 'message': 'File is already empty.'})
+    else:
         return jsonify({'status': 'error', 'message': 'File not found.'})
 
-    df = pd.read_csv(file_path, dtype=str)
-
-    print(f"DataFrame:\n{df}")
-    print(f"Change ID to delete: {change_id}")
-
-    # 检查 changeId 是否在 DataFrame 中
-    if change_id not in df['changeId'].astype(str).values:
-        return jsonify({'status': 'error', 'message': 'Change ID not found.'})
-
-    # 删除匹配的行
-    df = df[df['changeId'].astype(str) != change_id]
-
-    # 写回 CSV 文件
-    df.to_csv(file_path, index=False, encoding='utf-8')
-
-    return jsonify({'status': 'success'})
 
 @app.route('/save_DMT', methods=['POST'])
 def save_DMT():
+    global selected_MDT
     data = request.get_json()
     labels = data.get('labels', [])
 
+    selected_MDT = labels
+
     # 创建 DataFrame 并保存到 CSV 文件
-    df = pd.DataFrame({'Selected Labels': labels})
-    df.to_csv(DMT_CSV_PATH, index=False, mode='a', header=not os.path.exists(DMT_CSV_PATH))
+    df = pd.DataFrame(labels)
+    df.to_csv(DMT_CSV_PATH, index=False, mode='w', header=not os.path.exists(DMT_CSV_PATH))
 
     return jsonify({"status": "success", "message": "Attributes saved successfully."})
 
