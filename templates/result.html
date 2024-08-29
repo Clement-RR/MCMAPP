@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+
+    </style>
+</head>
+<body>
+    <object id="svgObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="100%"></object>
+
+    <h1>Max Vector Change</h1>
+    <p>Change applied method: {{ max_vector_change['max_vector_change_methode']['Name'] }}</p>
+    <p>Change applied DT: {{ max_vector_change['max_vector_change_DT']['Name'] }}</p>
+
+
+    <h1>Combined Result</h1>
+    <div>{{ combined_result|safe }}</div>
+
+ <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var nameColorDict = {{ name_color_dict|tojson }};
+            var svgObject = document.getElementById('svgObject');
+
+            svgObject.addEventListener('load', function() {
+                var svgDoc = svgObject.contentDocument;
+                var svgElements = svgDoc.querySelectorAll('title');
+
+                svgElements.forEach(function(element) {
+                    var name = element.textContent.trim();
+                    if (nameColorDict[name]) {
+                        var parentG = element.parentElement;
+                        var path = parentG.querySelector('path');
+                        if (path) {
+                            path.setAttribute('fill', nameColorDict[name]);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

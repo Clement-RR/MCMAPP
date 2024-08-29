@@ -84,21 +84,140 @@
 <body>
     <div id="left-panel">
         <div class="label-container">
-            <input type="checkbox" id="methode1">
-            <label for="methode1" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
-                Methode1
+            <input type="checkbox" id="methode01" {% if 'methode01' in selected_MDT %}checked{% endif %}>
+            <label for="methode01" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 01
             </label>
         </div>
         <div class="label-container">
-            <input type="checkbox" id="methode2">
-            <label for="methode2" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
-                Methode2
+            <input type="checkbox" id="methode02" {% if 'methode02' in selected_MDT %}checked{% endif %}>
+            <label for="methode02" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 02
             </label>
         </div>
         <div class="label-container">
-            <input type="checkbox" id="methode3">
-            <label for="methode3" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
-                Methode3
+            <input type="checkbox" id="methode03" {% if 'methode03' in selected_MDT %}checked{% endif %}>
+            <label for="methode03" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 03
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode04" {% if 'methode04' in selected_MDT %}checked{% endif %}>
+            <label for="methode04" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 04
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode05" {% if 'methode05' in selected_MDT %}checked{% endif %}>
+            <label for="methode05" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 05
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode06" {% if 'methode06' in selected_MDT %}checked{% endif %}>
+            <label for="methode5" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 06
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode07" {% if 'methode07' in selected_MDT %}checked{% endif %}>
+            <label for="methode07" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 07
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode08" {% if 'methode08' in selected_MDT %}checked{% endif %}>
+            <label for="methode08" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 08
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode09" {% if 'methode09' in selected_MDT %}checked{% endif %}>
+            <label for="methode09" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 09
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="methode10" {% if 'methode10' in selected_MDT %}checked{% endif %}>
+            <label for="methode10" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Methode 010
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool01" {% if 'digitalTool01' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool01" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 01
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool02" {% if 'digitalTool02' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool02" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 02
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool03" {% if 'digitalTool03' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool03" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 03
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool04" {% if 'digitalTool04' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool04" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 04
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool05" {% if 'digitalTool05' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool05" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 05
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool06" {% if 'digitalTool06' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool06" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 06
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool07" {% if 'digitalTool07' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool07" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 07
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool08" {% if 'digitalTool08' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool08" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 08
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool09" {% if 'digitalTool09' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool09" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 09
+            </label>
+        </div>
+
+        <div class="label-container">
+            <input type="checkbox" id="digitalTool10" {% if 'digitalTool10' in selected_MDT %}checked{% endif %}>
+            <label for="digitalTool10" onclick="showModal(event, '{{ url_for('static', filename='images/image_example.jpg') }}')">
+                Digital tool 10
             </label>
         </div>
 
@@ -140,12 +259,14 @@
 
         document.getElementById('save').addEventListener('click', function() {
             const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
-            const selectedLabels = [];
+            const labelsStatus = [];
 
             inputs.forEach(input => {
-                if (input.checked) {
-                    selectedLabels.push(input.nextElementSibling.innerText.trim());
-                }
+                const labelID = input.id;
+                labelsStatus.push({
+                    id: labelID,
+                    checked: input.checked ? 1 : 0
+                });
             });
 
             fetch('/save_DMT', {
@@ -153,7 +274,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({labels: selectedLabels}),
+                body: JSON.stringify({labels: labelsStatus}),
             })
             .then(response => response.json())
             .then(data => {

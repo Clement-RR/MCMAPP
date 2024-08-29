@@ -602,19 +602,26 @@
         </div>
 
         <div class="button-container">
-            <button class="left-button">Save</button>
-            <div class="spacer"></div> <!-- 用于推动按钮到两边 -->
-            <button class="deleteButton">Delete</button>
-            <button class="right-button" id="next">Next</button>
+            <button class="left-button">Save current process</button>
+             <div class="spacer"></div>
+            <button class="deleteButton">Delete Current Process</button>
+            <button class="right-button" id="next">Finish the Input</button>
         </div>
 
 
     </div>
     <script>
         const nextButton = document.getElementById('next');
-        nextButton.addEventListener('click', () => {
-            window.location.href = '{{ url_for("select_CA") }}';
-        });
+
+       // When the next button is clicked, just close the current window
+          nextButton.addEventListener('click', () => {
+          window.close(); // Close the window
+         });
+
+        //const nextButton = document.getElementById('next');
+        //nextButton.addEventListener('click', () => {
+        //    window.location.href = '{{ url_for("select_CA") }}';
+        //});
 
         document.addEventListener("DOMContentLoaded", function() {
             let selectedNodeTitle = ''; // 存储点击的节点的标题
