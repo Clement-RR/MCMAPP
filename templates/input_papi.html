@@ -642,7 +642,7 @@
                     node.addEventListener("click", function() {
                         // 移除所有节点的填充颜色
                         nodes.forEach(n => {
-                            const shape = n.querySelector("ellipse, polygon, circle");
+                            const shape = n.querySelector("path");
                             if (shape) {
                                const title = n.querySelector("title").textContent;
                                 if (savedNodes[title]) {
@@ -654,7 +654,7 @@
                         });
 
                         // 为当前节点添加高亮填充颜色
-                        const shape = this.querySelector("ellipse, polygon, circle");
+                        const shape = this.querySelector("path");
                         if (shape) {
                             shape.style.fill = "yellow";
                         }
@@ -777,7 +777,7 @@
                     console.log('Response:', json);
                     if (json.status === 'success') {
                         if (selectedNode) {
-                            const shape = selectedNode.querySelector("ellipse, polygon, circle");
+                            const shape = selectedNode.querySelector("path");
                             if (shape) {
                                 shape.style.fill = "red";  // 将节点颜色改为红色
                                 savedNodes[selectedNodeTitle] = true; // 将节点标记为已保存
@@ -802,7 +802,7 @@
                     console.log('Response:', json);
                     if (json.status === 'success') {
                         if (selectedNode) {
-                            const shape = selectedNode.querySelector("ellipse, polygon, circle");
+                            const shape = selectedNode.querySelector("path");
                             if (shape) {
                                 shape.style.fill = "";  // 重置节点颜色
                                 delete savedNodes[selectedNodeTitle]; // 移除节点保存状态
