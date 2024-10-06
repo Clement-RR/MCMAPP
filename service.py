@@ -119,7 +119,7 @@ def generate_bpmn_svg(file_path, output_svg_path):
     associations = {}
     for index, row in dsm_df.iterrows():
         outgoing_element = index
-        # 排除不需要检查的列
+        # Remove columns that do not need to be checked
         relevant_columns = row.drop(labels=['Swimlane', 'Type'])
 
         sequence_targets = relevant_columns[relevant_columns.astype(str).str.contains('S', na=False)].index.tolist()
@@ -248,17 +248,17 @@ def generate_bpmn_svg(file_path, output_svg_path):
 
     # Initialize positions dictionary
     positions = {}
-    horizontal_spacing = 3  # 设置 x 轴间距
+    horizontal_spacing = 3  # Setting the X-axis spacing
     for swimlane, elements_list in swimlanes.items():
         for index, element in enumerate(elements_list):
             positions[element] = (index * horizontal_spacing, start_y_positions[swimlane])
 
-    # 计算初始位置
+    # caculate initial position
     visited = set()
     for element in list(positions.keys()):
         calculate_positions(positions, sequence_flows, element, horizontal_spacing, vertical_spacing, visited)
 
-    # 处理一个target有多个相同的outgoing的情况
+    # one target more outgoings
     target_incoming = {}
     for src, targets in sequence_flows.items():
         for target in targets:
@@ -266,13 +266,13 @@ def generate_bpmn_svg(file_path, output_svg_path):
                 target_incoming[target] = []
             target_incoming[target].append(src)
 
-    # 确保目标元素的位置在所有源元素位置的右侧和中间
+    # Ensure that the target element is positioned to the right and in the centre of all source element positions.
     for target, sources in target_incoming.items():
         if len(sources) > 1:
             max_x = max(positions[src][0] for src in sources)
             avg_y = sum(positions[src][1] for src in sources) / len(sources)
             positions[target] = (max_x + horizontal_spacing, avg_y)
-            # 调整该元素的位置后重新按 sequence flow 进行计算
+            # Reposition the element and press sequence flow again to recalculate.
             visited = set()
             calculate_positions(positions, sequence_flows, target, horizontal_spacing, vertical_spacing, visited)
 
