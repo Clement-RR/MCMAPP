@@ -4,7 +4,8 @@ import os
 import time
 import service
 from werkzeug.utils import secure_filename
-import csv
+
+
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # 用于闪现消息
@@ -71,8 +72,22 @@ def DMT():
 
 @app.route('/input_change')
 def input_CA():
+    file_path = CSV_FILE_PATH
+
+    # Check if the CSV file exists and has data
+    try:
+        df = pd.read_csv(file_path)
+        if not df.empty:
+            # Get the last row of the CSV file (latest entry)
+            last_entry = df.iloc[-1].to_dict()
+        else:
+            last_entry = {}
+    except FileNotFoundError:
+        last_entry = {}  # If file not found, send an empty dictionary
+
     initialize_previous_columns()
-    return render_template('input-change.html', previous_CA_columns=previous_CA_columns)
+    print(previous_CA_columns)
+    return render_template('input-change.html', previous_CA_columns=previous_CA_columns, last_entry=last_entry)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -236,30 +251,6 @@ def save_change_attribute():
     filtered_data_df.to_csv(CHANGE_FILE_PATH, index=False, encoding='utf-8')
     return jsonify({'status': 'success'})
 
-@app.route('/get_change_attribute_data', methods=['GET'])
-def get_change_attribute_data():
-    if os.path.exists(CSV_FILE_PATH) and os.path.getsize(CSV_FILE_PATH) > 0:
-        df = pd.read_csv(CSV_FILE_PATH).replace({np.nan: None})
-        data = df.to_dict(orient='records')
-        print("Data sent to frontend:", data)
-        return jsonify(data)
-    else:
-        return jsonify([])
-
-@app.route('/delete_change_attribute', methods=['POST'])
-def delete_change_attribute():
-    file_path = CSV_FILE_PATH
-    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-        df = pd.read_csv(file_path)
-        if not df.empty:
-            # 删除第一行
-            df = df.iloc[1:]
-            df.to_csv(file_path, index=False, encoding='utf-8')
-            return jsonify({'status': 'success', 'message': 'Data deleted successfully.'})
-        else:
-            return jsonify({'status': 'error', 'message': 'File is already empty.'})
-    else:
-        return jsonify({'status': 'error', 'message': 'File not found.'})
 
 
 @app.route('/save_DMT', methods=['POST'])

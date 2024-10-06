@@ -82,56 +82,56 @@
     
             <!-- Right panel -->
            <div class="col-md-6">
-            <div class="dropdown-container" id="ImpactOnInternal">
-                    <label for="ImpactOnInternal">Impact on internal</label>
+            <div class="dropdown-container" id="impactOnInternal">
+                    <label for="impactOnInternal">Impact on internal</label>
             </div>
     
-            <div class="dropdown-container" id="ImpactOnExternal">
-                    <label for="ImpactOnInternal">Impact on external</label>
+            <div class="dropdown-container" id="impactOnExternal">
+                    <label for="impactOnInternal">Impact on external</label>
             </div>
     
-            <div class="dropdown-container" id="Efforts">
-                    <label for="Efforts">Efforts</label>
+            <div class="dropdown-container" id="efforts">
+                    <label for="efforts">Efforts</label>
             </div>
     
-            <div class="dropdown-container" id="Costs">
-                    <label for="Costs">Costs</label>
+            <div class="dropdown-container" id="costs">
+                    <label for="costs">Costs</label>
             </div>
     
-            <div class="dropdown-container" id="AvailableDataInformation">
-                    <label for="AvailableDataInformation">Available data/information</label>
+            <div class="dropdown-container" id="availableDataInformation">
+                    <label for="availableDataInformation">Available data/information</label>
             </div>
     
-            <div class="dropdown-container" id="DependencyLevel">
-                    <label for="DependencyLevel">Dependency level</label>
+            <div class="dropdown-container" id="dependencyLevel">
+                    <label for="dependencyLevel">Dependency level</label>
             </div>
     
-            <div class="dropdown-container" id="ChangePropagation">
-                    <label for="ChangePropagation">Change propagation</label>
+            <div class="dropdown-container" id="changePropagation">
+                    <label for="changePropagation">Change propagation</label>
             </div>
     
-            <div class="dropdown-container" id="ChangeReoccurrence">
-                    <label for="ChangeReoccurrence">Change reoccurrence</label>
+            <div class="dropdown-container" id="changeReoccurrence">
+                    <label for="changeReoccurrence">Change reoccurrence</label>
             </div>
     
-            <div class="dropdown-container" id="Complexity">
-                    <label for="Complexity">Complexity</label>
+            <div class="dropdown-container" id="complexity">
+                    <label for="complexity">Complexity</label>
             </div>
     
-            <div class="dropdown-container" id="Challenges">
-                    <label for="Challenges">Challenges</label>
+            <div class="dropdown-container" id="challenges">
+                    <label for="challenges">Challenges</label>
             </div>
     
-            <div class="dropdown-container" id="Duration">
-                    <label for="Duration">Duration</label>
+            <div class="dropdown-container" id="duration">
+                    <label for="duration">Duration</label>
             </div>
     
-            <div class="dropdown-container" id="Relevance">
-                    <label for="Relevance">Relevance</label>
+            <div class="dropdown-container" id="relevance">
+                    <label for="relevance">Relevance</label>
             </div>
     
-            <div class="dropdown-container" id="Urgency">
-                    <label for="Urgency">Urgency</label>
+            <div class="dropdown-container" id="urgency">
+                    <label for="urgency">Urgency</label>
             </div>
         
            </div>
@@ -146,7 +146,9 @@
 
     <script src="../static/js/bootstrap.bundle.min.js"></script>
     <script>
-       /* Creat drop down with nummbers 0-9 */
+        const previous_CA_columns = {{ previous_CA_columns | safe }};
+        const lastEntry = {{ last_entry | tojson }};
+        /* Creat drop down with nummbers 0-9 */
         window.onload = function() {
             createDropdowns();
         };
@@ -164,6 +166,11 @@
                     option.value = i;
                     option.textContent = i;
                     select.appendChild(option);
+                }
+
+                // If the container's ID is not in previous_CA_columns, disable the dropdown
+                if (!previous_CA_columns.includes(container.id)) {
+                    select.disabled = true;
                 }
                 container.prepend(select);
             });
@@ -184,19 +191,19 @@
                 changeStatus: document.getElementById('changeStatus').value.toString(),
                 timeOfOccurrence: document.getElementById('timeOfOccurrence').value.toString(),
                 lessonsLearned: document.getElementById('lessonsLearned').value.toString(),
-                ImpactOnInternal: document.getElementById('ImpactOnInternal').querySelector('select').value,
-                ImpactOnExternal: document.getElementById('ImpactOnExternal').querySelector('select').value,
-                Efforts: document.getElementById('Efforts').querySelector('select').value,
-                Costs: document.getElementById('Costs').querySelector('select').value,
-                AvailableDataInformation: document.getElementById('AvailableDataInformation').querySelector('select').value,
-                DependencyLevel: document.getElementById('DependencyLevel').querySelector('select').value,
-                ChangePropagation: document.getElementById('ChangePropagation').querySelector('select').value,
-                ChangeReoccurrence: document.getElementById('ChangeReoccurrence').querySelector('select').value,
-                Complexity: document.getElementById('Complexity').querySelector('select').value,
-                Challenges: document.getElementById('Challenges').querySelector('select').value,
-                Duration: document.getElementById('Duration').querySelector('select').value,
-                Relevance: document.getElementById('Relevance').querySelector('select').value,
-                Urgency: document.getElementById('Urgency').querySelector('select').value
+                impactOnInternal: document.getElementById('impactOnInternal').querySelector('select').value,
+                impactOnExternal: document.getElementById('impactOnExternal').querySelector('select').value,
+                efforts: document.getElementById('efforts').querySelector('select').value,
+                costs: document.getElementById('costs').querySelector('select').value,
+                availableDataInformation: document.getElementById('availableDataInformation').querySelector('select').value,
+                dependencyLevel: document.getElementById('dependencyLevel').querySelector('select').value,
+                changePropagation: document.getElementById('changePropagation').querySelector('select').value,
+                changeReoccurrence: document.getElementById('changeReoccurrence').querySelector('select').value,
+                complexity: document.getElementById('complexity').querySelector('select').value,
+                challenges: document.getElementById('challenges').querySelector('select').value,
+                duration: document.getElementById('duration').querySelector('select').value,
+                relevance: document.getElementById('relevance').querySelector('select').value,
+                urgency: document.getElementById('urgency').querySelector('select').value
             };
 
             fetch('/save_change_attribute', {
@@ -221,53 +228,43 @@
 
         window.onload = function() {
             createDropdowns();
+            populateFormData();
         };
+
+        // Function to populate input fields and dropdowns
+    function populateFormData() {
+        // Populate text inputs
+        document.getElementById('changeName').value = lastEntry.changeName || '';
+        document.getElementById('changeId').value = lastEntry.changeId || '';
+        document.getElementById('changeDescription').value = lastEntry.changeDescription || '';
+        document.getElementById('responsibility').value = lastEntry.responsibility || '';
+        document.getElementById('timeframe').value = lastEntry.timeframe || '';
+        document.getElementById('changeCause').value = lastEntry.changeCause || '';
+        document.getElementById('localization').value = lastEntry.localization || '';
+        document.getElementById('departments').value = lastEntry.departments || '';
+        document.getElementById('changeStatus').value = lastEntry.changeStatus || '';
+        document.getElementById('timeOfOccurrence').value = lastEntry.timeOfOccurrence || '';
+        document.getElementById('lessonsLearned').value = lastEntry.lessonsLearned || '';
+
+        // Populate dropdowns
+        document.getElementById('impactOnInternal').querySelector('select').value = lastEntry.impactOnInternal || '0';
+        document.getElementById('impactOnExternal').querySelector('select').value = lastEntry.impactOnExternal || '0';
+        document.getElementById('efforts').querySelector('select').value = lastEntry.efforts || '0';
+        document.getElementById('costs').querySelector('select').value = lastEntry.costs || '0';
+        document.getElementById('availableDataInformation').querySelector('select').value = lastEntry.availableDataInformation || '0';
+        document.getElementById('dependencyLevel').querySelector('select').value = lastEntry.dependencyLevel || '0';
+        document.getElementById('changePropagation').querySelector('select').value = lastEntry.changePropagation || '0';
+        document.getElementById('changeReoccurrence').querySelector('select').value = lastEntry.changeReoccurrence || '0';
+        document.getElementById('complexity').querySelector('select').value = lastEntry.complexity || '0';
+        document.getElementById('challenges').querySelector('select').value = lastEntry.challenges || '0';
+        document.getElementById('duration').querySelector('select').value = lastEntry.duration || '0';
+        document.getElementById('relevance').querySelector('select').value = lastEntry.relevance || '0';
+        document.getElementById('urgency').querySelector('select').value = lastEntry.urgency || '0';
+    }
+
     </script>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('/get_change_attribute')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Data received:', data);  // 输出接收到的数据进行调试
-                const tableBody = document.querySelector('#dataTable tbody');
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.changeName}</td>
-                        <td>${row.changeId}</td>
-                        <td><button onclick="deleteRow('${row.changeId}')">Delete</button></td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    });
 
-function deleteRow(changeId) {
-    fetch('/delete_change_attribute', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ changeId: changeId.toString() })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            alert('Row deleted successfully.');
-            location.reload();  // 删除成功后刷新页面
-        } else {
-            alert('Error deleting row: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-</script>
 </body>
 </html>
 

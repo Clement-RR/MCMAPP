@@ -1,2 +1,2 @@
-changeName,changeId,changeDescription,responsibility,timeframe,changeCause,localization,departments,changeStatus,timeOfOccurrence,lessonsLearned,ImpactOnInternal,ImpactOnExternal,Efforts,Costs,AvailableDataInformation,DependencyLevel,ChangePropagation,ChangeReoccurrence,Complexity,Challenges,Duration,Relevance,Urgency
-,,,,,,,,,,,0,0,0,0,0,0,0,0,0,0,0,0,0
+changeName,changeId,changeDescription,responsibility,timeframe,changeCause,localization,departments,changeStatus,timeOfOccurrence,lessonsLearned,impactOnInternal,impactOnExternal,efforts,costs,availableDataInformation,dependencyLevel,changePropagation,changeReoccurrence,complexity,challenges,duration,relevance,urgency
+Change1,1,description,Responsibility,2024-10-06T10:42,reason,munich,manufacturing,unknown,2024-10-06T10:42,something,1,2,0,0,2,4,0,5,0,6,0,7,8

@@ -1,2 +1,2 @@
-ImpactOnInternal,ImpactOnExternal,Efforts,Costs,AvailableDataInformation,DependencyLevel,ChangePropagation,ChangeReoccurrence,Complexity,Challenges,Duration,Relevance,Urgency
-0,0,0,0,0,0,0,0,0,0,0,0,0
+impactOnInternal,impactOnExternal,efforts,costs,availableDataInformation,dependencyLevel,changePropagation,changeReoccurrence,complexity,challenges,duration,relevance,urgency
+1,2,0,0,2,4,0,5,0,6,0,7,8
