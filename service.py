@@ -2,6 +2,8 @@ import pandas as pd
 import pygraphviz as pgv
 import os
 import csv
+import numpy as np
+
 
 
 def initialize_data_csv(file_path, output_folder):
@@ -382,8 +384,11 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
         'R_change_process': R_change_process.flatten()
     })
 
-    # Filter and print values greater than 30000
-    related_process = combined[combined['R_change_process'] > 10000]
+    # 假设 R_change_process 是一个 numpy 数组或 pandas 数据框中的列
+    max_value = np.max(R_change_process) # 获取 R_change_process 的最大值
+    threshold = max_value * 0.9 # 计算最大值的 80%
+    # 筛选出 R_change_process 大于阈值的行
+    related_process = combined[combined['R_change_process'] > threshold]
     print(related_process)
 
     methode_names = dt_names[:m]
