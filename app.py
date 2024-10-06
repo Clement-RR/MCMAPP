@@ -56,23 +56,23 @@ def start_page():
 
 @app.route('/input_pa_pis')
 def step2_input_pa_pis():
-    return render_template('input_papi.html')
+    return render_template('input-papi.html')
 
 @app.route('/select_CA')
 def select_CA():
     initialize_previous_columns()
     print(previous_CA_columns)
-    return render_template('select_CA.html', previous_CA_columns=previous_CA_columns)
+    return render_template('select-ca.html', previous_CA_columns=previous_CA_columns)
 
 @app.route('/DMT')
 def DMT():
     load_selected_MDT()
-    return render_template('DMT.html', selected_MDT=selected_MDT)
+    return render_template('select-mdt.html', selected_MDT=selected_MDT)
 
-@app.route('/input_CA')
+@app.route('/input_change')
 def input_CA():
     initialize_previous_columns()
-    return render_template('input_CA.html', previous_CA_columns=previous_CA_columns)
+    return render_template('input-change.html', previous_CA_columns=previous_CA_columns)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():

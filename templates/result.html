@@ -4,21 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Result</title>
-     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+
     <style>
 
+        object {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-    <object id="svgObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="100%"></object>
+    <!-- Bootstrap 容器 -->
+    <div class="container">
 
-    <h1>Max Vector Change</h1>
-    <p>Change applied method: {{ max_vector_change['max_vector_change_methode']['Name'] }}</p>
-    <p>Change applied DT: {{ max_vector_change['max_vector_change_DT']['Name'] }}</p>
+        <!-- 第一部分：BPMN -->
+        <div>
+            <div class="col-12">
+                <h2>Result</h2>
+                <object id="svgObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="400px"></object>
+            </div>
+        </div>
+
+        <!-- 第二部分：Applicable M&DTs -->
+        <div class="row">
+            <div class="col-12">
+                <h2>Applicable M&DTs</h2>
+                <p><strong>Method:</strong> {{ max_vector_change['max_vector_change_methode']['Name'] }}</p>
+                <p><strong>Digital Tools:</strong> {{ max_vector_change['max_vector_change_DT']['Name'] }}</p>
+            </div>
+        </div>
+
+        <!-- 第三部分：Combined Result -->
+        <div class="row">
+            <div class="col-12">
+                <h2>Combined Result</h2>
+                <div class="border p-3">{{ combined_result|safe }}</div>
+            </div>
+        </div>
+
+    </div>
 
 
-    <h1>Combined Result</h1>
-    <div>{{ combined_result|safe }}</div>
+   <script src="../static/js/bootstrap.bundle.min.js"></script>
 
  <script>
         document.addEventListener('DOMContentLoaded', function() {

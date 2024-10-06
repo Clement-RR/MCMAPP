@@ -3,55 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>BPMN Visualization</title>
-    <script>
-        // 在页面加载完成后运行此函数
-        window.onload = function() {
-            createDropdowns();
-        };
-
-        // 此函数负责创建所有的下拉菜单
-        function createDropdowns() {
-            const dropdownPlaces = document.querySelectorAll('.dropdown-container'); // 选择所有需要下拉菜单的容器
-
-            // 对每个容器进行操作
-            dropdownPlaces.forEach(function(container) {
-                const select = document.createElement('select'); // 创建select元素
-                select.id = container.id ; // 为select元素创建一个基于容器id的唯一id
-                // 添加选项1到9
-                for (let i = 0; i <= 9; i++) {
-                    const option = document.createElement('option'); // 创建option元素
-                    option.value = i;
-                    option.textContent = i;
-                    select.appendChild(option); // 将option添加到select中
-                }
-                container.prepend(select); // 将select添加到当前容器中
-            });
-        }
-    </script>
     <style>
         body {
-            display: flex; /* 定义为 flex 容器 */
+            display: flex;
             height: 100vh;
-            margin: 0; /* 移除默认的 margin */
+            margin: 0;
         }
         #leftPanel {
-            width: 50%; /* 左侧面板占据50%的宽度 */
-            height: 100%; /* 全高 */
+            width: 80%;
+            height: 100%;
             display: flex;
-            justify-content: center; /* 水平居中 bpmnObject */
-            align-items: center;  /*垂直居中 bpmnObject */
+            justify-content: center;
+            align-items: center;
         }
         #rightPanel {
-            width: 50%; /* 右侧面板也占据50%的宽度 */
-            height: 100%; /* 全高 */
+            width: 20%;
+            height: 100%;
             display: flex;
-            flex-direction: column; /* 子元素垂直排列 */
+            flex-direction: column;
 
-            overflow: auto; /* 超出内容可滚动 */
-            padding: 20px; /* 留点间隙 */
+            overflow: auto;
+            padding: 20px;
         }
         .accordion {
-            width: 100%; /* 满宽 */
+            width: 100%;
             padding: 15px;
             background-color: #eee;
             color: #444;
@@ -69,7 +44,7 @@
             display: none;
             background-color: white;
             overflow: hidden;
-            width: 100%; /* 满宽 */
+            width: 100%;
             overflow-y: auto;
         }
         .inner-accordion {
@@ -84,7 +59,7 @@
             font-size: 14px;
             transition: 0.4s;
 
-            margin-left: 40px; /* 添加左边距以产生缩进效果 */
+            margin-left: 40px;
         }
 
         .inner-panel {
@@ -102,23 +77,23 @@
         }
 
         .button-container {
-            display: flex;        /* 启用 Flexbox */
-            justify-content: space-between; /* 使用 space-between 使子元素分布在两端 */
-            align-items: center;  /* 垂直居中对齐 */
-            width: 100%;          /* 可以根据需要调整容器的宽度 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
             margin-top: 10px;
         }
 
         .left-button {
-            margin-left: 20px;/* 根据需要调整样式 */
-        }
+            margin-left: 20px;
+            }
 
         .right-button {
-            margin-right: 20px;/* 根据需要调整样式 */
+            margin-right: 20px;
         }
 
         .spacer {
-            flex-grow: 1; /* 让间隔元素增长以填充空间，推动按钮到两边 */
+            flex-grow: 1;
         }
 
 
@@ -605,127 +580,15 @@
             <button class="left-button">Save current process</button>
              <div class="spacer"></div>
             <button class="deleteButton">Delete Current Process</button>
-            <button class="right-button" id="next">Finish the Input</button>
+            <button class="right-button" onclick="window.close();" >Finish</button>
         </div>
 
 
     </div>
+
+
     <script>
-        const nextButton = document.getElementById('next');
-
-       // When the next button is clicked, just close the current window
-          nextButton.addEventListener('click', () => {
-          window.close(); // Close the window
-         });
-
-        //const nextButton = document.getElementById('next');
-        //nextButton.addEventListener('click', () => {
-        //    window.location.href = '{{ url_for("select_CA") }}';
-        //});
-
-        document.addEventListener("DOMContentLoaded", function() {
-            let selectedNodeTitle = ''; // 存储点击的节点的标题
-            let selectedNode = null; // 存储选中的节点
-            const savedNodes = {}; // 存储已保存节点的状态
-            const saveButton = document.querySelector('.left-button');
-            const deleteButton = document.querySelector('.deleteButton');
-
-            /* 提取任务流程名称*/
-            const svgObject = document.getElementById("svgObject");
-            svgObject.addEventListener("load", function() {
-                const svgDoc = svgObject.contentDocument || svgObject.getSVGDocument();
-
-                // 获取所有class为node的元素
-                const nodes = svgDoc.querySelectorAll("g.node");
-
-                nodes.forEach(node => {
-                    node.addEventListener("click", function() {
-                        // 移除所有节点的填充颜色
-                        nodes.forEach(n => {
-                            const shape = n.querySelector("path");
-                            if (shape) {
-                               const title = n.querySelector("title").textContent;
-                                if (savedNodes[title]) {
-                                    shape.style.fill = "red";  // 保留已保存节点的红色
-                                } else {
-                                    shape.style.fill = "";  // 清除未保存节点的颜色
-                                }
-                            }
-                        });
-
-                        // 为当前节点添加高亮填充颜色
-                        const shape = this.querySelector("path");
-                        if (shape) {
-                            shape.style.fill = "yellow";
-                        }
-
-                        // 显示title
-                        const title = this.querySelector("title").textContent;
-                        document.getElementById("nodeName").textContent = title;
-                        selectedNodeTitle = title; // 存储选中的节点标题
-                        selectedNode = this; // 存储选中的节点
-                        fetchNodeData(title); // Fetch node data when node is clicked
-                    });
-                });
-            });
-
-            function fetchNodeData(nodeId) {
-                fetch('/get_pa_pi_data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ node_id: nodeId }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        alert(data.message);
-                    } else {
-                        fillForm(data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching node data:', error);
-                });
-            }
-
-            function fillForm(data) {
-    // 设置当前节点名称
-    document.getElementById('nodeName').innerText = data.Name || 'Unknown';
-
-    // 填充下拉菜单字段 (gpa01-gpa22)
-    for (let i = 1; i <= 22; i++) {
-        let dropdownId = `gpa${i.toString().padStart(2, '0')}`;
-        let value = data[dropdownId] !== undefined ? data[dropdownId] : 0;
-        let selectElement = document.querySelector(`#${dropdownId} select`);
-        if (selectElement) {
-            selectElement.value = value;
-        }
-    }
-
-    // 填充复选框字段 (spa01-spa35, pi01-pi28)
-    for (let i = 1; i <= 35; i++) {
-        let checkboxId = `spa${i.toString().padStart(2, '0')}`;
-        let checked = data[checkboxId] === 1;
-        let checkboxElement = document.getElementById(checkboxId);
-        if (checkboxElement) {
-            checkboxElement.checked = checked;
-        }
-    }
-
-    for (let i = 1; i <= 28; i++) {
-        let checkboxId = `pi${i.toString().padStart(2, '0')}`;
-        let checked = data[checkboxId] === 1;
-        let checkboxElement = document.getElementById(checkboxId);
-        if (checkboxElement) {
-            checkboxElement.checked = checked;
-        }
-    }
-}
-
-
-            /* accordion点击展开 */
+        /* Accordion click event to expand  */
             var acc = document.getElementsByClassName("accordion");
             var innerAcc = document.getElementsByClassName("inner-accordion");
 
@@ -753,7 +616,144 @@
                 });
             }
 
-            /* 数据储存 */
+
+
+       /* Creat drop down with nummbers 0-9 */
+
+       window.onload = function() {
+            createDropdowns();
+        };
+
+
+         function createDropdowns() {
+            const dropdownPlaces = document.querySelectorAll('.dropdown-container');
+
+
+            dropdownPlaces.forEach(function(container) {
+                const select = document.createElement('select');
+                select.id = container.id ;
+
+                for (let i = 0; i <= 9; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    select.appendChild(option); // add option in select
+                }
+                container.prepend(select); // add select in container
+            });
+        }
+
+
+
+
+
+
+        /* click event to click node  */
+        document.addEventListener("DOMContentLoaded", function() {
+            let selectedNodeTitle = ''; // Store the title of the clicked node
+            let selectedNode = null; // Store the selected node
+            const savedNodes = {}; // Store the state of saved nodes
+            const saveButton = document.querySelector('.left-button');
+            const deleteButton = document.querySelector('.deleteButton');
+
+            // Extract task flow names
+            const svgObject = document.getElementById("svgObject");
+            svgObject.addEventListener("load", function() {
+                const svgDoc = svgObject.contentDocument || svgObject.getSVGDocument();
+
+                // Get all elements with the class "node"
+                const nodes = svgDoc.querySelectorAll("g.node");
+
+                nodes.forEach(node => {
+                    node.addEventListener("click", function() {
+                        // Remove fill color for all nodes
+                        nodes.forEach(n => {
+                            const shape = n.querySelector("path");
+                            if (shape) {
+                               const title = n.querySelector("title").textContent;
+                                if (savedNodes[title]) {
+                                    shape.style.fill = "green";  // Keep saved nodes in green
+                                } else {
+                                    shape.style.fill = "";  // Clear the color for unsaved nodes
+                                }
+                            }
+                        });
+
+                        // yellow for click on node
+                        const shape = this.querySelector("path");
+                        if (shape) {
+                            shape.style.fill = "yellow";
+                        }
+
+                        // show node title
+                        const title = this.querySelector("title").textContent;
+                        document.getElementById("nodeName").textContent = title;
+                        selectedNodeTitle = title;
+                        selectedNode = this;
+                        fetchNodeData(title); // Fetch node data when node is clicked
+                    });
+                });
+            });
+
+            function fetchNodeData(nodeId) {
+                fetch('/get_pa_pi_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ node_id: nodeId }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                    } else {
+                        fillForm(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching node data:', error);
+                });
+            }
+
+            function fillForm(data) {
+    // set node name
+    document.getElementById('nodeName').innerText = data.Name || 'Unknown';
+
+    // Populate dropdown fields (gpa01-gpa22)
+    for (let i = 1; i <= 22; i++) {
+        let dropdownId = `gpa${i.toString().padStart(2, '0')}`;
+        let value = data[dropdownId] !== undefined ? data[dropdownId] : 0;
+        let selectElement = document.querySelector(`#${dropdownId} select`);
+        if (selectElement) {
+            selectElement.value = value;
+        }
+    }
+
+    //  Populate checkbox fields (spa01-spa35, pi01-pi28)
+    for (let i = 1; i <= 35; i++) {
+        let checkboxId = `spa${i.toString().padStart(2, '0')}`;
+        let checked = data[checkboxId] === 1;
+        let checkboxElement = document.getElementById(checkboxId);
+        if (checkboxElement) {
+            checkboxElement.checked = checked;
+        }
+    }
+
+    for (let i = 1; i <= 28; i++) {
+        let checkboxId = `pi${i.toString().padStart(2, '0')}`;
+        let checked = data[checkboxId] === 1;
+        let checkboxElement = document.getElementById(checkboxId);
+        if (checkboxElement) {
+            checkboxElement.checked = checked;
+        }
+    }
+}
+
+
+
+
+            /* save data */
             saveButton.addEventListener('click', function() {
                 const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
                 const data = [];
@@ -779,8 +779,8 @@
                         if (selectedNode) {
                             const shape = selectedNode.querySelector("path");
                             if (shape) {
-                                shape.style.fill = "red";  // 将节点颜色改为红色
-                                savedNodes[selectedNodeTitle] = true; // 将节点标记为已保存
+                                shape.style.fill = "green";  // Change node color to green
+                                savedNodes[selectedNodeTitle] = true; // Mark node as saved
                             }
                         }
                     }
@@ -788,7 +788,10 @@
                 .catch(error => console.error('Error:', error));
             });
 
-            /* 删除节点 */
+
+
+
+            /* delete current input  */
             deleteButton.addEventListener('click', function() {
                 fetch('/delete_data', {  // Flask endpoint
                     method: 'POST',
@@ -804,8 +807,8 @@
                         if (selectedNode) {
                             const shape = selectedNode.querySelector("path");
                             if (shape) {
-                                shape.style.fill = "";  // 重置节点颜色
-                                delete savedNodes[selectedNodeTitle]; // 移除节点保存状态
+                                shape.style.fill = "";  // reset color
+                                delete savedNodes[selectedNodeTitle];
                             }
                             document.getElementById("nodeName").textContent = "____";
                         }
@@ -814,6 +817,7 @@
                 .catch(error => console.error('Error:', error));
             });
         });
+
     </script>
 </body>
 </html>

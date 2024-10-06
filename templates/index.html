@@ -1,276 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manufacture Change Management 1.0</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            display: flex;
-        }
-        .navbar {
-            width: 250px;
-            background-color: #343a40;
-            color: white;
-            height: 100vh;
-            position: fixed;
-            overflow-y: auto;
-        }
-        .navbar-brand {
-            text-align: center;
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            white-space: normal;
-            word-wrap: break-word;
-        }
-        .nav-link {
-            color: white;
-            padding: 10px 15px;
-            white-space: normal;
-            word-wrap: break-word;
-        }
-        .nav-link:hover, .dropdown-item:hover {
-            background-color: #495057;
-        }
-        .dropdown-menu {
-            background-color: #343a40;
-            border: none;
-        }
-        .dropdown-item {
-            color: white;
-            white-space: normal;
-            word-wrap: break-word;
-        }
-        .content {
-            margin-left: 250px;
-            padding: 20px;
-            width: calc(100% - 250px);
-            transition: opacity 0.5s;
-        }
-        .welcome-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-        }
-        .welcome-container h1 {
-            font-size: 2.5rem;
-        }
-        .welcome-container p {
-            font-size: 1.2rem;
-            text-align: center;
-        }
-        .welcome-container .btn {
-            margin-top: 10px;
-        }
-        .card-deck .card {
-            width: 100%;
-            margin: 10px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>MCM</title>
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+  <style>
+    .btn{
+        width: 120px;
+    }
+
+
+  </style>
+
+
 </head>
 <body>
-    <nav class="navbar bg-dark">
-        <div class="navbar-brand">Welcome to MCM Software</div>
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="showContent('dashboard', event)"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="initializationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-play-circle"></i> Initialization
-                </a>
-                <div class="dropdown-menu" aria-labelledby="initializationDropdown">
-                    <a class="dropdown-item" href="#" onclick="showContent('step1', event)">Step 1: Input Process</a>
-                    <a class="dropdown-item" href="#" onclick="showContent('step2', event)">Step 2: Input PA & PIs</a>
-                    <a class="dropdown-item" href="#" onclick="showContent('step3', event)">Step 3: Select CAs</a>
-                    <a class="dropdown-item" href="#" onclick="showContent('step4', event)">Step 4: Select M&DTs</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="operationsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-tools"></i> Operations
-                </a>
-                <div class="dropdown-menu" aria-labelledby="operationsDropdown">
-                    <a class="dropdown-item" href="#" onclick="showContent('inputChange', event)">Input Change</a>
-                    <a class="dropdown-item" href="#" onclick="showContent('overviewChange', event)">Overview of Change-specific Process</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" onclick="showContent('settings', event)"><i class="fas fa-cog"></i> Settings</a>
-            </li>
+
+<div class="container-fluid"> 
+  <div class="row">
+    <!-- Sidebar section，2 cols in large screen -->
+    <div class="col-lg-2 bg-dark vh-100">
+      <div class="m-2">
+        <div class="mt-5 mb-4 fs-4 fw-bold text-white text-center">Company-Individual MCM</div>
+        <ul class="nav flex-column fs-6">
+          
+           <li class="nav-item my-2">
+             <a class="nav-link text-white" href="#" id="dashboard"><img src="../static/images/speedometer2.svg" width="20" class="me-4 mb-1">Dashboard</a>
+           </li>
+          
+
+          <!-- Initialization dropdown -->
+          <li class="nav-item my-2">
+            <a class="nav-link text-white" data-bs-toggle="collapse" href="#submenu1" role="button" aria-expanded="false" aria-controls="submenu1">
+                <img src="../static/images/sliders.svg" width="20" class="me-4 mb-1">Initialization</a>
+            <div class="collapse" id="submenu1">
+              <ul class="nav flex-column ms-5">
+                <li class="nav-item my-2">
+                  <a class="nav-link text-white" href="#" id="inputProcess">1. Input Process</a>
+                </li>
+                <li class="nav-item my-2">
+                  <a class="nav-link text-white"  href="#" id="inputPaPi">2. Input PA &P Is</a>
+
+                </li>
+                <li class="nav-item my-2">
+                    <a class="nav-link text-white" href="#" id="SelectCAs">3. Select CAs</a>
+                </li>
+
+                <li class="nav-item my-2">
+                    <a class="nav-link text-white" href="#" id="SelectMDTs">4. Select M & DTs</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          
+
+         <!-- Operations dropdown -->
+          <li class="nav-item my-2">
+            <a class="nav-link text-white" data-bs-toggle="collapse" href="#submenu2" role="button" aria-expanded="false" aria-controls="submenu2">
+                <img src="../static/images/tools.svg" width="20" class="me-4 mb-1"> Operations
+            </a>
+            <div class="collapse" id="submenu2">
+              <ul class="nav flex-column ms-5">
+                <li class="nav-item my-2">
+                  <a class="nav-link text-white" href="#" id="InputChange">1. Input Change</a>
+                </li>
+                <li class="nav-item my-2">
+                  <a class="nav-link text-white" href="#" id="Overview">2. Overview of Change-specific Process</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+         
+          <li class="nav-item my-2">
+            <a class="nav-link text-white" href="#" id="Settings"><img src="../static/images/gear.svg" width="20" class="me-4 mb-1"> Settings</a>
+          </li>
+          
         </ul>
-    </nav>
-    <div class="content" id="content-area">
-        <div class="welcome-container">
-            <h1>Dashboard</h1>
-            <p>Welcome to the Manufacture Change Management system.</p>
-            <p>Monitor and manage all change processes from here.</p>
-            <button class="btn btn-primary" onclick="showContent('step1', event)">Get Started</button>
-        </div>
+      </div>
+      
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script>
-        function showContent(page, event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
 
-            const contentArea = document.getElementById('content-area');
-            contentArea.innerHTML = '';
-            setTimeout(() => {
-                let content = '';
-                switch(page) {
-                    case 'dashboard':
-                        content = `<h1>Dashboard</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">How to Start</h5>
-                                               <p class="card-text">Instructions on how to start using the MCM system.</p>
-                                               <a href="#" class="btn btn-primary">Learn More</a>
-                                           </div>
-                                       </div>
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">About MCM Software</h5>
-                                               <p class="card-text">Information about the MCM software and its features.</p>
-                                               <a href="#" class="btn btn-secondary">Learn More</a>
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'step1':
-                        content = `<h1>Step 1: Input Process</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Download DSM Template</h5>
-                                               <p class="card-text">Download the DSM template to get started with the input process.</p>
+    <!-- Content section，10 cols in large screen -->
+    <!-- Content section，10 cols in large screen -->
+    <div class="col-lg-10 col-sm-6 mt-4" id="main-content">
+        <div class="text-center" style="margin-top: 130px;"><h1>Welcome to MCM software</h1>
+            <h5>Start your change-specific and company-individual manufacturing change management</h5>
+        </div>
+       
+    </div>
+ 
+    
+   
 
-                                               <a href="../static/DSM_Template.xlsx" class="btn btn-primary" download>Download</a>
 
-                                           </div>
-                                       </div>
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Upload File</h5>
-                                               <p class="card-text">Upload your completed DSM template file.</p>
-                                               <input type="file" id="fileInput" style="display: none;" onchange="uploadFile(event)">
-                                               <!-- Button triggers the file input dialog -->
-                                               <a href="#" class="btn btn-secondary" onclick="document.getElementById('fileInput').click(); return false;">Upload</a>
-                                           </div>
-                                       </div>
-                                       <div class="card">
-                                           <div class="card-body">
-                                              <h5 class="card-title">Generate BPMN</h5>
-                                               <p class="card-text">Generate a BPMN diagram from your input data.</p>
-                                               <a href="#" class="btn btn-success" onclick="generateBPMN()">Generate</a>
-                                               <!-- This is the div where the message will be displayed -->
-                                              <div id="message" style="margin-top: 10px;"></div>
+</div>
 
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'step2':
-                                   content = `<h1>Step 2: Input PA & PIs</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Direct Input in BPMN</h5>
-                                               <p class="card-text">Enter PA & PIs directly into the BPMN diagram.</p>
-                                               <a href="#" class="btn btn-primary" onclick="window.open('/input_pa_pis', '_blank', 'width=800,height=600'); return false;">Start Input</a>
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'step3':
-                        content = `<h1>Step 3: Select CAs</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Select CAs</h5>
-                                               <p class="card-text">Choose the appropriate CAs for your process.</p>
-                                               <a href="#" class="btn btn-primary" onclick="window.open('/select_CA', '_blank', 'width=800,height=600'); return false;">Start Input</a>
 
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'step4':
-                        content = `<h1>Step 4: Select M&DTs</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Select M&DTs</h5>
-                                               <p class="card-text">Choose the appropriate M&DTs for your process.</p>
+<script src="../static/js/bootstrap.bundle.min.js"></script>
 
-                                               <a href="#" class="btn btn-primary" onclick="window.open('/DMT', '_blank', 'width=800,height=600'); return false;">Start Input</a>
 
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'inputChange':
-                        content = `<h1>Input Change</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Input Change</h5>
-                                               <p class="card-text">Enter changes to the process here.</p>
-                                               <a href="#" class="btn btn-primary" onclick="window.open('/input_CA', '_blank', 'width=800,height=600'); return false;">Start Input</a>
+<script>
+    // 确保DOM完全加载完毕后再执行
+ document.addEventListener('DOMContentLoaded', function () {
 
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'overviewChange':
-                        content = `<h1>Overview of Change-specific Process</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Generate Overview</h5>
-                                               <p class="card-text">Generate an overview of the change-specific process.</p>
-                                               <a href="#" class="btn btn-primary" onclick="window.open('/result', '_blank', 'width=800,height=600'); return false;">Start Input</a>
+    // Dashboard
+  
+    document.getElementById('dashboard').addEventListener('click', function() {
+    document.getElementById('main-content').innerHTML = `
+      
+        
+        <div class="row m-4">
+        <h1 class="mb-3" >Dashboard</h1>
+        
+        <!-- First Card -->
+        
+          <div class="card mb-4 col-10">
+            
+            <div class="card-body">
+              <h5 class="card-title">How to Start</h5>
+              <p class="card-text">Learn how to start using the MCM software.</p>
+              <a href="#" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#collapseHowToStart" aria-expanded="false" aria-controls="collapseHowToStart">
+                Learn More
+              </a>
+              <!-- Collapsible content for the first card -->
+              <div class="collapse mt-3" id="collapseHowToStart">
+                <p>This software is divided into two parts: Initialization and Operation.</p>
+                <p>First, in the Initialization phase, the user needs to import the production process DSM in the 1st step. The software will automatically generate a BPMN.</p>
+                <p>In the 2nd step of Initialization, the user needs to input Process Attributes (PAs) and Process Information (PIs) into the BPMN. In the 3rd and 4th steps of Initialization, the user should input Change Attributes (CAs) and available Methods and Digital Tools (M&DT), respectively.</p>
+                <p>Once Initialization is completed, the user only needs to input the Manufacturing Change (MC) in the 1st step of the Operation phase. The impact of the MC on the production steps and the corresponding solutions will be presented in an overview in the 2nd step of Operation.</p>
+              </div>
+            </div>
+          </div>
+        
 
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    case 'settings':
-                        content = `<h1>Settings</h1>
-                                   <div class="card-deck">
-                                       <div class="card">
-                                           <div class="card-body">
-                                               <h5 class="card-title">Details of Correlation Matrix</h5>
-                                               <p class="card-text">View and edit the correlation matrix details.</p>
-                                               <a href="#" class="btn btn-primary">View Details</a>
-                                           </div>
-                                       </div>
-                                   </div>`;
-                        break;
-                    default:
-                        content = '<h1>Welcome to the Initialization Process</h1><p>Select a step from the dropdown menu to begin.</p>';
-                }
-                contentArea.innerHTML = content;
-            }, 300);
-        }
+        <!-- Second Card -->
+        
+          <div class="card col-10">
+            <div class="card-body">
+              <h5 class="card-title">About MCM Software</h5>
+              <p class="card-text">Get to know more about the MCM software.</p>
+              <a href="/static/papers/Concept_paper.pdf" class="btn btn-primary" target="_blank">
+                Learn More
+                </a>
 
-        function downloadTemplate() {
-            alert('Download DSM Template button clicked');
-        }
+            </div>
+          </div>
+        </div>
+      
+    `;
+  });
+ 
+     // Initialization Step 1
+  
+      document.getElementById('inputProcess').addEventListener('click', function() {
+        document.getElementById('main-content').innerHTML = `
+        <div class="row m-4">
+        <h1 class="mb-3" >Step 1: Input Process</h1>
+        
+          
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Download DSM Template</h5>
+              <p class="card-text">Download the DSM template to begin the input process.</p>
+              <a href="../static/dsm_template.csv" class="btn btn-success">Download</a>
+            </div>
+          </div>
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Upload File</h5>
+              <p class="card-text">Upload your file to proceed with the process.</p>
+              <input type="file" id="fileInput" style="display: none;" onchange="uploadFile(event)">
+              <!-- Button triggers the file input dialog -->
+              <a href="#" class="btn btn-primary" onclick="document.getElementById('fileInput').click(); return false;">Upload</a>
+            </div>
+          </div>
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Generate BPMN</h5>
+              <p class="card-text">Generate BPMN from the uploaded data.</p>
+              <a href="#" class="btn btn-warning" onclick="generateBPMN()">Generate</a>
+              <!-- This is the div where the message will be displayed -->
+              <div id="message" style="margin-top: 10px;"></div>
+            </div>
+          </div>
+         <div class="card col-10">
+            <div class="card-body">
+              <h5 class="card-title">Learn more about this Step</h5>
+              <p class="card-text">Read the literature relevant to this step.</p>
+              <a href="#" class="btn btn-success">Download</a>
+            </div>
+          </div>
+          </div>
 
-        function uploadFile(event) {
+        `;
+      });
+
+      // Initialization Step 2
+      document.getElementById('inputPaPi').addEventListener('click', function() {
+        document.getElementById('main-content').innerHTML = `
+          <div class="row m-4">
+        <h1 class="mb-3">Step 2: Input PA & PIs </h1>
+          
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Direct Input in BPMN</h5>
+              <p class="card-text">Enter PA & PIs directly into the BPMN diagram.</p>
+              <a href="#" class="btn btn-primary" onclick="window.open('/input_pa_pis', '_blank', 'width=800,height=600'); return false;">Start Input</a>
+            </div>
+          </div>
+         
+         <div class="card col-10">
+            <div class="card-body">
+              <h5 class="card-title">Learn more about this Step</h5>
+              <p class="card-text">Read the literature relevant to this step.</p>
+              <a href="#" class="btn btn-success">Download</a>
+            </div>
+          </div>
+          </div>
+
+        `;        
+
+      });
+
+// Step 3: Select CAs
+      document.getElementById('SelectCAs').addEventListener('click', function () {
+        document.getElementById('main-content').innerHTML = `
+           <div class="row m-4">
+        <h1 class="mb-3">Step 3: Select CAs </h1>
+          
+            <div class="card mb-4 col-10">
+              <div class="card-body">
+                <h5 class="card-title">Select Change Attributes</h5>
+                <p class="card-text">Choose the appropriate CAs for your process.</p>
+                <a href="#" class="btn btn-primary" onclick="window.open('/select_CA', '_blank', 'width=800,height=600'); return false;">Start Input</a>
+              </div>
+            </div>
+            <div class="card col-10">
+              <div class="card-body">
+                <h5 class="card-title">Learn more about this Step</h5>
+                <p class="card-text">Read the literature relevant to this step.</p>
+                <a href="#" class="btn btn-success">Download</a>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // When clicking "Start Input", fetch and load input_ca.html
+
+      });
+
+
+
+        // Initialization Step 4
+        document.getElementById('SelectMDTs').addEventListener('click', function() {
+        document.getElementById('main-content').innerHTML = `
+           <div class="row m-4">
+        <h1 class="mb-3">Step 4: Select M & DTs </h1>
+          
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Select Methods and Digital Tools</h5>
+              <p class="card-text">Choose the Methods and Digital Tools for your process.</p>
+              <a href="#" class="btn btn-primary" onclick="window.open('/DMT', '_blank', 'width=800,height=600'); return false;">Start Input</a>
+            </div>
+          </div>
+         
+         <div class="card col-10">
+            <div class="card-body">
+              <h5 class="card-title">Learn more about this Step</h5>
+              <p class="card-text">Read the literature relevant to this step.</p>
+              <a href="#" class="btn btn-success">Download</a>
+            </div>
+          </div>
+          </div>
+
+        `;
+        // When clicking "Start Input", fetch and load input_mdt.html
+          document.getElementById('input_mdt_btn').addEventListener('click', function () {
+          fetch('./input_mdt.html')
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById('main-content').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading input_mdt.html:', error));
+        });
+      
+      });
+
+
+
+       // Operaton Step 1
+       document.getElementById('InputChange').addEventListener('click', function() {
+        document.getElementById('main-content').innerHTML = `
+        <div class="row m-4">
+        <h1 class="mb-3">Input Change</h1>
+          
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Input Change</h5>
+              <p class="card-text">Enter changes to the process here.</p>
+              <a href="#" class="btn btn-primary" id="input_change_btn" onclick="window.open('/input_change', '_blank', 'width=800,height=600'); return false;">Start Input</a>
+            </div>
+          </div>
+         
+         <div class="card col-10">
+            <div class="card-body">
+              <h5 class="card-title">Learn more about this Step</h5>
+              <p class="card-text">Read the literature relevant to this step.</p>
+              <a href="#" class="btn btn-success">Download</a>
+            </div>
+          </div>
+          </div>
+
+        `;
+                // When clicking "Start Input", fetch and load input_change.html
+
+      });
+
+        // Operaton Step 2
+        document.getElementById('Overview').addEventListener('click', function() {
+        document.getElementById('main-content').innerHTML = `
+           <div class="row m-4">
+        <h1 class="mb-3">Overview of Change-specific Process</h1>
+         
+          <div class="card mb-4 col-10">
+            <div class="card-body">
+              <h5 class="card-title">Generate Overview</h5>
+              <p class="card-text">Generate an overview of the change-specific process.</p>
+              <a href="#" class="btn btn-primary" id="generate_result_btn" onclick="window.open('/result', '_blank', 'width=800,height=600'); return false;">Generate</a>
+            </div>
+          </div>
+         
+         <div class="card col-10">
+            <div class="card-body">
+              <h5 class="card-title">Learn more about this Step</h5>
+              <p class="card-text">Read the literature relevant to this step.</p>
+              <a href="#" class="btn btn-success">Download</a>
+            </div>
+          </div>
+          </div>
+
+        `;
+
+      });
+   
+
+     // Settings
+    document.getElementById('Settings').addEventListener('click', function() {
+    document.getElementById('main-content').innerHTML = `
+        
+      
+
+ 
+       
+      <div class="row m-4">
+      <h1 >Settings</h1>
+      <div class="card mb-4 col-10">
+        <div class="card-body">
+          <h5 class="card-title">Details of Correlation Matrix</h5>
+          <p class="card-text">View and edit the correlation matrix details.</p>
+          <a href="#" class="btn btn-primary">View</a>
+          
+        </div>
+      </div>
+     
+     <div class="card col-10">
+        <div class="card-body">
+          <h5 class="card-title">Learn more about this Step</h5>
+          <p class="card-text">Read the literature relevant to this step.</p>
+          <a href="#" class="btn btn-success">Download</a>
+        </div>
+      </div>
+      </div>
+      
+
+    `;
+  });
+});
+
+          function uploadFile(event) {
             const file = event.target.files[0];
             if (file) {
                 const formData = new FormData();
@@ -314,6 +426,12 @@ function generateBPMN() {
         document.addEventListener('DOMContentLoaded', () => {
             showContent('dashboard');
         });
-    </script>
+   
+  </script>
+
+
+
+
 </body>
 </html>
+
