@@ -233,8 +233,17 @@ def select_change_attribute():
         # 现在将传入的数据保存到selected_CA.csv文件，覆盖之前的内容
         selected_data_df = pd.DataFrame(columns=ids)
         selected_data_df.to_csv(SELECTED_CA_FILE_PATH, index=False, mode='w')
+        try:
+            df = pd.read_csv(CSV_FILE_PATH)
+            header = df.columns  # Get the column names
+        except FileNotFoundError:
+            return jsonify({'status': 'error', 'message': 'CSV file not found'})
 
+        # Write the header back to the file, clearing all data but keeping the header
+        with open(CSV_FILE_PATH, 'w', encoding='utf-8') as file:
+            file.write(','.join(header) + '\n')
         return jsonify({"message": "Attributes saved successfully."})
+
     return jsonify({"message": "No labels received."})
 
 CHANGE_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_vector.csv')
