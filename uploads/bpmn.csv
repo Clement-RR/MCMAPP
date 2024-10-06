@@ -1,0 +1,16 @@
+Swimlane,Type,Name,EA1,EA2,EA3,EA4,EA5,EA7,EA8,EA9,EA10,EA11,EA12,EA13,EA14,EA15,EA16
+Sales,Task,EA1,,S,,,,,,,,,,,,,
+Sales,Task,EA2,,,S,,,,,,,,M,,,,
+Sales,Task,EA3,,,,S,,M,,,,,,,,,
+Sales,Task,EA4,,,,,S,,,,,,,,,,
+Sales,Task,EA5,,,,,,,,,,,,,,,
+Engneering,Task,EA7,,,,,,,S,,,,,,,,
+Engneering,Task,EA8,,,,,,,,S,,,,,,,
+Engneering,Task,EA9,,,,,,,,,S,,,,,,
+Engneering,Task,EA10,,,,,,,,,,S,M,,,,
+Engneering,Task,EA11,,,,M,,,,,,,,,,,
+IT,Task,EA12,,,,,,,,,,,,,,AS,AS
+IT,Task,EA13,,,,,,,,,,,,,S,,
+IT,Task,EA14,,,,,,,,,,,,,,,
+IT,Task,EA15,,,,,,,,,,,,S,,,
+IT,Task,EA16,,,,,,,,,,,,,S,,
