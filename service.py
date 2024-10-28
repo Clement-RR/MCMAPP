@@ -343,8 +343,8 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
     dt_names = df8[0]
     df8 = df8.drop(columns=[0])
 
-    n = 10 #Zahl der MA
-    m = 10 #Zahl der Methode
+    n = 23 #Zahl der MA
+    m = 23 #Zahl der Methode
     dmm_process = df1.values
     dmm_change = df2.values
     change_vector = dmm_change.T

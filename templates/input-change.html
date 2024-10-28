@@ -146,8 +146,8 @@
 
     <script src="../static/js/bootstrap.bundle.min.js"></script>
     <script>
-        const previous_CA_columns = {{ previous_CA_columns | safe }};
-        const lastEntry = {{ last_entry | tojson }};
+        const previous_CA_columns = { previous_CA_columns , safe };
+        const lastEntry = { last_entry , tojson };
         /* Creat drop down with nummbers 0-9 */
         window.onload = function() {
             createDropdowns();

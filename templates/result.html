@@ -44,7 +44,7 @@
 
  <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var nameColorDict = {{ name_color_dict|tojson }};
+            var nameColorDict = { name_color_dict,tojson };
             var svgObject = document.getElementById('svgObject');
 
             svgObject.addEventListener('load', function() {
