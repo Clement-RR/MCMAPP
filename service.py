@@ -341,7 +341,7 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
     df7 = df7.drop(columns=['PA'])
     df8 = pd.read_csv(selected_M_DT_file, header=None)
     dt_names = df8[0]
-    df8 = df8.drop(columns=[0])
+    df8 = df8.drop(columns=[0,2])
 
     n = 23 #Zahl der MA
     m = 23 #Zahl der Methode
