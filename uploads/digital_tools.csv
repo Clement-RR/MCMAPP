@@ -1,52 +1,52 @@
-360-Degree Feedback,1
-6-3-5 Method,1
-A3 - Report,1
-Brainstorming,1
-Communication Plan,1
-Critical-to-Quality Tree Method,1
-Decision Tree,1
-Eisenhower Matrix,1
-Gantt-Chart,1
-Interview,1
-Issues Mapping,1
-Matrix Diagram,1
-Mind Mapping,1
-Observation,1
-Portfolio Analysis,1
-Pro and Contra List,1
-Process Modeling,1
-Project Charter,1
-Six Thinking Hats,1
-To-do Lists,1
-User Stories,1
-Utility Analysis,1
-Value Stream Mapping ,1
-3D Modeling and Animation,1
-AI Assistants and Chatbots,1
-Augmented & Virtual Reality Development Platforms,1
-Asset and Maintenance Management,1
-Business Process Management and Robotic Process Automation,1
-Computer-Aided-Design Softwares,1
-Computer-Aided-Engineering Softwares,1
-"""Chart, Diagram and Graph Development Tools""",1
-Customer Relationship Management and Marketing Automation,1
-Data Analytics and Business Intelligence,1
-Digital Twin Development Tools,1
-Enterprise Management Systems and Tools,1
-Feedback and Survey Platforms,1
-Finance Management and Accounting,1
-Human Resource and Talent Management,1
-Information and Knowledge Management,1
-Integrated Development Environments and Programming Languages,1
-Inventory and Warehouse Management,1
-Manufacturing Management Tools,1
-Mind Maps and Whiteboards Tools,1
-Procurement and Spend Management Tools,1
-Product Lifecycle Management Tools,1
-Project Management Tools,1
-Quality Management Tools,1
-System Modeling and Simulation Tools,1
-Team Collaboration Platforms,1
-Training & E-Learning Tools,1
-Transportation and Logistics Management,1
-Version Control Systems,1
+360-Degree Feedback,1,../static/images/360.png
+6-3-5 Method,1,../static/images/635.png
+A3 - Report,1,../static/images/A3.png
+Brainstorming,1,../static/images/Brainstorming.png
+Communication Plan,1,../static/images/ComPlan.png
+Critical-to-Quality Tree Method,1,../static/images/CtQ.png
+Decision Tree,1,../static/images/Dtree.png
+Eisenhower Matrix,1,../static/images/Eisenhower.png
+Gantt-Chart,1,../static/images/Gant.png
+Interview,1,../static/images/Interview.png
+Issues Mapping,1,../static/images/Imap.png
+Matrix Diagram,1,../static/images/Mdiag.png
+Mind Mapping,1,../static/images/MindMap.png
+Observation,1,../static/images/Observation.png
+Portfolio Analysis,1,../static/images/PfAnalysis.png
+Pro and Contra List,1,../static/images/ProConList.png
+Process Modeling,1,../static/images/ProcessMod.png
+Project Charter,1,../static/images/ProjChart.png
+Six Thinking Hats,1,../static/images/STH.png
+To-do Lists,1,../static/images/ToDoList.png
+User Stories,1,../static/images/UserStories.png
+Utility Analysis,1,../static/images/UtilAnalysis.png
+Value Stream Mapping ,1,../static/images/VSM.png
+3D Modeling and Animation,1,../static/images/3DMod.png
+AI Assistants and Chatbots,1,../static/images/AIAC.png
+Augmented & Virtual Reality Development Platforms,1,../static/images/AVRDP.png
+Asset and Maintenance Management,1,../static/images/AMM.png
+Business Process Management and Robotic Process Automation,1,../static/images/BPMRPA.png
+Computer-Aided-Design Softwares,1,../static/images/CADS.png
+Computer-Aided-Engineering Softwares,1,../static/images/CAES.png
+"""Chart, Diagram and Graph Development Tools""",1,../static/images/CDGDT.png
+Customer Relationship Management and Marketing Automation,1,../static/images/CRMMA.png
+Data Analytics and Business Intelligence,1,../static/images/DABI.png
+Digital Twin Development Tools,1,../static/images/DTDT.png
+Enterprise Management Systems and Tools,1,../static/images/EMST.png
+Feedback and Survey Platforms,1,../static/images/FSP.png
+Finance Management and Accounting,1,../static/images/FMA.png
+Human Resource and Talent Management,1,../static/images/HRTM.png
+Information and Knowledge Management,1,../static/images/IKM.png
+Integrated Development Environments and Programming Languages,1,../static/images/IDEPL.png
+Inventory and Warehouse Management,1,../static/images/IWM.png
+Manufacturing Management Tools,1,../static/images/MMT.png
+Mind Maps and Whiteboards Tools,1,../static/images/MMWT.png
+Procurement and Spend Management Tools,1,../static/images/PSMT.png
+Product Lifecycle Management Tools,1,../static/images/PLMT.png
+Project Management Tools,1,../static/images/PMT.png
+Quality Management Tools,1,../static/images/QMT.png
+System Modeling and Simulation Tools,1,../static/images/SMST.png
+Team Collaboration Platforms,1,../static/images/TCP.png
+Training & E-Learning Tools,1,../static/images/TELT.png
+Transportation and Logistics Management,1,../static/images/TLM.png
+Version Control Systems,1,../static/images/VCS.png

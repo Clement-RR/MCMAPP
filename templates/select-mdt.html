@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>input_mdt</title>
+    <title>Input Methods and Digital Tools</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
         <style>
 
@@ -20,11 +20,12 @@
     <div class="container">
         <div class="row">
 
-            <div class="col-6 ml-5">
-                <h1 class="mt-4">Methods</h1>
-                  <div class="label-container form-check mt-4">
-                      <input type="checkbox" id="360-Degree Feedback" {% if '360-Degree Feedback' in selected_MDT %}checked{% endif %}>
-                      <label for="360-Degree Feedback">360-Degree Feedback</label>
+            <div class="col-6 ml-5" id="Methods">
+                <img src="../static/images/methods.svg" width="100%"></img>
+            <!--
+                <div class="label-container form-check mt-4">
+                      <input type="checkbox" id={{selected_MDT[0]}} {% if selected_MDT[0] in selected_MDT %}checked{% endif %}>
+                      <label >{{selected_MDT[0]}}</label>
                       <img src="../static/images/info-circle-fill.svg" class="info-icon" tabindex="0" data-toggle="popover" data-trigger="focus" data-html="true" data-content="<img src='../static/images/image_example.jpg'>"></img>
                   </div>
                             
@@ -134,16 +135,16 @@
                                 <img src="../static/images/info-circle-fill.svg" class="info-icon" tabindex="0" data-toggle="popover" data-trigger="focus" data-html="true" data-content="<img src='./images/car.jpg'>"></img>
                               </div>
                               <div class="label-container form-check mt-4">
-                                <input type="checkbox" id="Value Stream Mapping " {% if 'Value Stream Mapping ' in selected_MDT %}checked{% endif %}>
+                                <input type="checkbox" id="Value Stream Mapping " {% if 'Value Stream Mapping' in selected_MDT %}checked{% endif %}>
                                 <label for="Value Stream Mapping ">Value Stream Mapping </label>
                                 <img src="../static/images/info-circle-fill.svg" class="info-icon" tabindex="0" data-toggle="popover" data-trigger="focus" data-html="true" data-content="<img src='./images/car.jpg'>"></img>
-                              </div>
+                              </div> <!---->
 
             </div>
                 
-            <div class="col-6">
-                            <h1 class="mt-4">Digital Tools</h1>
-                            
+            <div class="col-6" id="Digital Tools">
+              <img src="../static/images/digitaltools.svg" width="100%"></img>
+            <!--
                             <div class="label-container form-check mt-4">
                                 <input type="checkbox" id="3D Modeling and Animation" {% if '3D Modeling and Animation' in selected_MDT %}checked{% endif %}>
                                 <label for="3D Modeling and Animation">3D Modeling and Animation</label>
@@ -286,9 +287,9 @@
                             </div>
                             <div class="label-container form-check mt-4">
                               <input type="checkbox" id="Version Control Systems" {% if 'Version Control Systems' in selected_MDT %}checked{% endif %}>
-                              <label for="Version Control Systems">Version Control Systems</label>
+                              <label for="Version Control Systems">{Version Control Systems}</label>
                               <img src="../static/images/info-circle-fill.svg" class="info-icon" tabindex="0" data-toggle="popover" data-trigger="focus" data-html="true" data-content="<img src='./images/car.jpg'>"></img>
-                            </div>
+                            </div> <!---->
             </div>
                             
             <div class="d-flex mt-2">
@@ -307,6 +308,35 @@
 
 
 <script>
+selected_MDT = {{selected_MDT | tojson}};
+MDT = {{MDT | tojson}};
+ImgPath = {{ImgPath | tojson}};
+checkedi=MDT.map(mdt => {
+  if (selected_MDT.includes(mdt))
+    return 'checked'
+  else
+    return ''
+  })
+
+for (i = 0; i < MDT.slice(0,MDT.indexOf("3D Modeling and Animation")).length; i++) {
+  temp = document.createElement('div');
+  temp.className = 'label-container form-check mt-4';
+  temp.innerHTML = `<input type="checkbox" id='${MDT[i]}' ${checkedi[i]}>
+                              <label>${MDT[i]}</label>
+                              <a href="#" onclick="window.open('${ImgPath[i]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a>`;
+  document.getElementById('Methods').appendChild(temp);
+}
+
+for (i = 0; i < MDT.slice(MDT.indexOf("3D Modeling and Animation")).length; i++) {
+  temp = document.createElement('div');
+  temp.className = 'label-container form-check mt-4';
+  temp.innerHTML = `<input type="checkbox" id='${MDT.slice(MDT.indexOf("3D Modeling and Animation"))[i]}' ${checkedi[i+MDT.slice(0,MDT.indexOf("3D Modeling and Animation")).length]}>
+                              <label>${MDT.slice(MDT.indexOf("3D Modeling and Animation"))[i]}</label>
+                              <a href="#" onclick="window.open('${ImgPath[i+MDT.slice(0,MDT.indexOf("3D Modeling and Animation")).length]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a>`;
+  document.getElementById('Digital Tools').appendChild(temp);
+}
+
+
 
     $(function () {
         $('[data-toggle="popover"]').popover();

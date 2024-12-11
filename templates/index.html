@@ -22,7 +22,8 @@
     <!-- Sidebar section，2 cols in large screen -->
     <div class="col-lg-2 bg-dark vh-100">
       <div class="m-2">
-        <div class="mt-5 mb-4 fs-4 fw-bold text-white text-center">Company-Individual MCM</div>
+        <a class="nav-link" href="/"><div class="mt-5 mb-4 fs-4 fw-bold text-white text-center">Company-Individual MCM</div></a>
+        
         <ul class="nav flex-column fs-6">
           
            <li class="nav-item my-2">
@@ -40,7 +41,7 @@
                   <a class="nav-link text-white" href="#" id="inputProcess">1. Input Process</a>
                 </li>
                 <li class="nav-item my-2">
-                  <a class="nav-link text-white"  href="#" id="inputPaPi">2. Input PA &P Is</a>
+                  <a class="nav-link text-white"  href="#" id="inputPaPi">2. Input PA & PIs</a>
 
                 </li>
                 <li class="nav-item my-2">
@@ -85,8 +86,8 @@
     <!-- Content section，10 cols in large screen -->
     <!-- Content section，10 cols in large screen -->
     <div class="col-lg-10 col-sm-6 mt-4" id="main-content">
-        <div class="text-center" style="margin-top: 130px;"><h1>Welcome to MCM software</h1>
-            <h5>Start your change-specific and company-individual manufacturing change management</h5>
+        <div class="text-center" style="margin-top: 130px;"><h1>Welcome to the Manufacturing Change Management software</h1>
+            <h5>Start your change-specific and company-individual Manufacturing Change Management</h5>
         </div>
        
     </div>
@@ -201,7 +202,7 @@
       document.getElementById('inputPaPi').addEventListener('click', function() {
         document.getElementById('main-content').innerHTML = `
           <div class="row m-4">
-        <h1 class="mb-3">Step 2: Input PA & PIs </h1>
+        <h1 class="mb-3">Step 2: Input Process Attributes and Process Informations </h1>
           
           <div class="card mb-4 col-10">
             <div class="card-body">
@@ -228,12 +229,12 @@
       document.getElementById('SelectCAs').addEventListener('click', function () {
         document.getElementById('main-content').innerHTML = `
            <div class="row m-4">
-        <h1 class="mb-3">Step 3: Select CAs </h1>
+        <h1 class="mb-3">Step 3: Select Change Attributes </h1>
           
             <div class="card mb-4 col-10">
               <div class="card-body">
                 <h5 class="card-title">Select Change Attributes</h5>
-                <p class="card-text">Choose the appropriate CAs for your process.</p>
+                <p class="card-text">Choose the appropriate Change Attributes for your process.</p>
                 <a href="#" class="btn btn-primary" onclick="window.open('/select_CA', '_blank', 'width=800,height=600'); return false;">Start Input</a>
               </div>
             </div>
@@ -257,7 +258,7 @@
         document.getElementById('SelectMDTs').addEventListener('click', function() {
         document.getElementById('main-content').innerHTML = `
            <div class="row m-4">
-        <h1 class="mb-3">Step 4: Select M & DTs </h1>
+        <h1 class="mb-3">Step 4: Select Methods and Digital Tools </h1>
           
           <div class="card mb-4 col-10">
             <div class="card-body">

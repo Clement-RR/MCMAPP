@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Input_CA</title>
+    <title>Input Change Attributes</title>
 
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <style>
@@ -21,7 +21,7 @@
 
     <body class="bg-light container-flow">
     
-        <h1 class="m-4">Input Changes</h1>
+        <h1 class="m-4">Input Change Attributes</h1>
        
     
     
@@ -146,8 +146,8 @@
 
     <script src="../static/js/bootstrap.bundle.min.js"></script>
     <script>
-        const previous_CA_columns = { previous_CA_columns , safe };
-        const lastEntry = { last_entry , tojson };
+        const previous_CA_column = {{previous_CA_columns | safe }};
+        const lastEntry = {{ last_entry | tojson }};
         /* Creat drop down with nummbers 0-9 */
         window.onload = function() {
             createDropdowns();
@@ -169,7 +169,7 @@
                 }
 
                 // If the container's ID is not in previous_CA_columns, disable the dropdown
-                if (!previous_CA_columns.includes(container.id)) {
+                if (!previous_CA_column.includes(container.id)) {
                     select.disabled = true;
                 }
                 container.prepend(select);

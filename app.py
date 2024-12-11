@@ -22,6 +22,8 @@ DMT_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
 SELECTED_CA_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'selected_CA.csv')
 previous_CA_columns = []
 selected_MDT = []
+MDT = []
+ImgPath = []
 
 
 def initialize_previous_columns():
@@ -37,22 +39,22 @@ def initialize_previous_columns():
 
 def load_selected_MDT():
     global selected_MDT
+    global MDT
+    global ImgPath
     if os.path.exists(DMT_CSV_PATH):
-        df = pd.read_csv(DMT_CSV_PATH, header=None, names=['label', 'value'])
+        df = pd.read_csv(DMT_CSV_PATH, header=None, names=['label', 'value','path'])
+        MDT = df['label'].tolist()
         selected_MDT = df[df['value'] == 1]['label'].tolist()
+        ImgPath = df['path'].tolist()
     else:
         selected_MDT = []
+        MDT = []
+        ImgPath = []
 
 
 @app.route('/')
 def home():
     return render_template('index.html')
-
-@app.route('/start_page')
-def start_page():
-    return render_template('index.html')
-
-
 
 
 @app.route('/input_pa_pis')
@@ -68,7 +70,7 @@ def select_CA():
 @app.route('/DMT')
 def DMT():
     load_selected_MDT()
-    return render_template('select-mdt.html', selected_MDT=selected_MDT)
+    return render_template('select-mdt.html', selected_MDT=selected_MDT, MDT=MDT, ImgPath=ImgPath)
 
 @app.route('/input_change')
 def input_CA():
