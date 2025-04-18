@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Input Change Attributes</title>
+    <title>Input change attributes</title>
 
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <style>
+        
         .dropdown-container {
             width: 100%;
             margin-bottom: 10px;
@@ -19,9 +20,9 @@
     </style>
 </head>
 
-    <body class="bg-light container-flow">
+    <body class="container-flow">
     
-        <h1 class="m-4">Input Change Attributes</h1>
+        <h1 class="m-4">Input change attributes</h1>
        
     
     
@@ -30,7 +31,7 @@
             <div class="col-md-6 ml-5">
             <div id="Specification">
                 <div class="input-container">
-                    <label for="changeName">Change Name:</label>
+                    <label for="changeName">Change name:</label>
                     <input type="text" id="changeName" name="changeName">
                 </div>
                 <div class="input-container">
@@ -87,7 +88,7 @@
             </div>
     
             <div class="dropdown-container" id="impactOnExternal">
-                    <label for="impactOnInternal">Impact on external</label>
+                    <label for="impactOnExternal">Impact on external</label>
             </div>
     
             <div class="dropdown-container" id="efforts">
@@ -220,7 +221,7 @@
                     setTimeout(() => {
                         location.reload();
                     }, 100); // 0.1s delay
-                    alert('Error: ' + data.message);
+                    //alert('Error: ' + data.message);
                 }
             })
             .catch(error => console.error('Error:', error));

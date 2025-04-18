@@ -2,7 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 import pandas as pd
 import os
 import time
+import datetime
 import service
+import csv
+import webview
 from werkzeug.utils import secure_filename
 
 
@@ -72,6 +75,10 @@ def DMT():
     load_selected_MDT()
     return render_template('select-mdt.html', selected_MDT=selected_MDT, MDT=MDT, ImgPath=ImgPath)
 
+@app.route('/addnew')
+def addnew():
+    return render_template('addnew.html')
+
 @app.route('/input_change')
 def input_CA():
     file_path = CSV_FILE_PATH
@@ -106,13 +113,28 @@ def upload():
         return jsonify({'message': 'File successfully uploaded'}), 200
     return jsonify({'message': 'File upload failed'}), 400
 
+@app.route('/uploadSetting', methods=['GET', 'POST'])
+def uploadSetting():
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+    if file:
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        session['uploadedSetting_file'] = filename  # 保存上传的文件名到 session
+        return jsonify({'message': 'File successfully uploaded'}), 200
+    return jsonify({'message': 'File upload failed'}), 400
+
 @app.route('/generate_bpmn', methods=['POST'])
 def generate_bpmn():
     try:
         if 'uploaded_file' not in session:
             return jsonify({'message': 'No file uploaded'}), 400
         filename = session['uploaded_file']
-        input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # 这里需要根据实际情况修改
+        input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)  
         output_folder = app.config['UPLOAD_FOLDER']
         output_svg_path = os.path.join(app.config['OUTPUT_FOLDER'], 'bpmn.svg')
         service.initialize_data_csv(input_file_path, output_folder)
@@ -262,14 +284,16 @@ def save_change_attribute():
     filtered_data_df.to_csv(CHANGE_FILE_PATH, index=False, encoding='utf-8')
     return jsonify({'status': 'success'})
 
-
+@app.route('/save_method_attribute', methods=['POST'])
+def save_method_attribute():
+    
+    return jsonify({'status': 'success'})
 
 @app.route('/save_DMT', methods=['POST'])
 def save_DMT():
     global selected_MDT
     data = request.get_json()
     labels = data.get('labels', [])
-
     selected_MDT = labels
 
     # 创建 DataFrame 并保存到 CSV 文件
@@ -288,17 +312,118 @@ def result():
     dmm_dt_file = os.path.join(SETTING_FOLDER, 'DMM_DT.csv')
     dmm_change_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_CA_MDT.csv')
     dmm_process_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_PA_MDT.csv')
+    load_selected_MDT()
+    n=len(MDT[:MDT.index("3D Modeling and Animation")])
+    m=len(MDT[MDT.index("3D Modeling and Animation"):])
 
-    max_vector_change, combined_result, name_color_dict = service.correlation_analysis(
+    max_vector_change, combined_result, ResultList, related_process = service.correlation_analysis(
         dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file,
-        dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file
+        dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file,
+        n, m
     )
-    combined_result_filtered = combined_result[
-        ['Name', 'Methode_1', 'methode_value_1', 'Methode_2', 'methode_value_2', 'DT_1', 'DT_value_1', 'DT_2',
-         'DT_value_2']]
+    try:
+        #if 'inputdsm.csv' not in app.config['UPLOAD_FOLDER']:
+            #return jsonify({'message': 'No file uploaded'}), 400
+        filename = 'inputdsm.csv'
+        input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        csv_file_path =   os.path.join(app.config['UPLOAD_FOLDER'], 'result_bpmn.csv')
+        Result_Tasks = related_process['Name']
+        output_svg_path = os.path.join(app.config['OUTPUT_FOLDER'], 'result_bpmn.svg')
+        service.result_initialization(input_file_path,csv_file_path , Result_Tasks)
+        service.generate_bpmn_svg(csv_file_path, output_svg_path)
+    except Exception as e:
+        return jsonify({'message': f'Error generating BPMN: {e}'}), 500
+   
+
+    global DoneNodes
+    if os.path.exists(os.path.join(app.config['OUTPUT_FOLDER'], 'Change_record.csv')):
+        change_attribute_file = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+        changeID = pd.read_csv(change_attribute_file)['changeId'][0]
+        df = pd.read_csv(os.path.join(app.config['OUTPUT_FOLDER'], 'Change_record.csv'))        
+        print(df.loc[df['Change ID'] == changeID])
+        DoneNodes = df.loc[df['Change ID'] == changeID]['Process step'].tolist()
+        
+        print(DoneNodes)
+    else:
+        DoneNodes = []
+
+    comb= ResultList.to_numpy().tolist()
+    load_selected_MDT()
     return render_template('result.html', max_vector_change=max_vector_change,
-                           combined_result=combined_result_filtered.to_html(index=False), name_color_dict=name_color_dict)
+                           combined_result=combined_result.to_html(index=True, header=True, justify='left', classes='combined_result_table'), comb_res=comb, MDT=MDT, ImgPath=ImgPath, DoneNodes=DoneNodes)
+
+@app.route('/save_lessons_learned', methods=['POST'])
+def save_lessons_learned():
+    data = request.get_json()['data']
+    change_attribute_file = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
+    changeID = pd.read_csv(change_attribute_file)['changeId'][0]
+    print("Received data:", data)
+    # 指定 CSV 文件路径
+    file_path = os.path.join(app.config['OUTPUT_FOLDER'], 'Change_record.csv')
+    print(f"CSV file path: {file_path}")
+    # 检查文件是否存在
+    if not os.path.exists(file_path):
+        with open(file_path, 'w', newline='', encoding='utf-8') as out:
+            writer = csv.DictWriter(out, fieldnames=['Change ID','Process step','Date','Time','Responsible','Method or digital tool','Lessons learned'])
+            writer.writeheader()
+            writer.writerow({'Change ID':changeID,'Process step':data['Name'],'Date':datetime.datetime.now().strftime("%x"),'Time':datetime.datetime.now().strftime("%X"),'Responsible':data['responsible'],'Method or digital tool':data['MDT'],'Lessons learned':data['lessonsLearned']})
+            out.close
+        return jsonify({'status': 'success', 'message': 'Change record created and change registered succesfully.'})
+
+    try:
+        # 读取 CSV 文件
+        df = pd.read_csv(file_path)
+        print("DataFrame before update:", df.head())
+        if changeID in df['Change ID'].values:       
+            print('past') 
+            if not df[(df['Process step'] == data['Name']) & (df['Change ID'] == changeID)].empty:
+                print('past if') 
+                row_index = df[(df['Process step'] == data['Name']) & (df['Change ID'] == changeID)].index
+                print("Row index to update:", row_index)
+                if not row_index.empty:
+                    df.at[row_index[0], 'Date'] = datetime.datetime.now().strftime("%x")
+                    df.at[row_index[0], 'Time'] = datetime.datetime.now().strftime("%X")
+                    df.at[row_index[0], 'Responsible'] = data['responsible']
+                    df.at[row_index[0], 'Method or digital tool'] = data['MDT']
+                    df.at[row_index[0], 'Lessons learned'] = data['lessonsLearned']
+                    print("DataFrame after update:", df.head())
+                    with open(file_path, 'w') as f:
+                        df.to_csv(f, index=False)
+                        f.flush()
+                        os.fsync(f.fileno())
+                    time.sleep(0.1)
+
+                    df.to_csv(file_path, index=False)  # Ensure writing inside the condition
+                    return jsonify({'status': 'success', 'message': 'Lessons learned updated successfully.'})
+                else:
+                    return jsonify({'status': 'error', 'message': 'Selected option not found in the data.'})
+            else:
+                with open(file_path, mode='a', newline='', encoding='utf-8') as out:
+                    writer = csv.DictWriter(out, fieldnames=['Change ID','Process step','Date','Time', 'Responsible', 'Method or digital tool', 'Lessons learned'])
+                    writer.writerow({'Change ID':changeID,'Process step':data['Name'],'Date':datetime.datetime.now().strftime("%x"),'Time':datetime.datetime.now().strftime("%X"),'Responsible':data['responsible'],'Method or digital tool':data['MDT'], 'Lessons learned':data['lessonsLearned']})
+                    out.close
+                return jsonify({'status': 'success', 'message': 'Change completion registered succesfully.'})
+        else:
+            with open(file_path, mode='a', newline='', encoding='utf-8') as out:
+                writer = csv.DictWriter(out, fieldnames=['Change ID','Process step','Date','Time', 'Responsible', 'Method or digital tool', 'Lessons learned'])
+                writer.writerow({'Change ID':changeID,'Process step':data['Name'],'Date':datetime.datetime.now().strftime("%x"),'Time':datetime.datetime.now().strftime("%X"),'Responsible':data['responsible'],'Method or digital tool':data['MDT'], 'Lessons learned':data['lessonsLearned']})
+                out.close
+            return jsonify({'status': 'success', 'message': 'Change registered succesfully.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/delete_process_step', methods=['POST'])
+def delete_process_step():
+    change_record_file = os.path.join(app.config['OUTPUT_FOLDER'], 'Change_record.csv')
+    df = pd.read_csv(change_record_file)
+    df = df.drop(df.index[-1])
+    df.to_csv(change_record_file, index=False)
+    return jsonify({'status': 'success', 'message': 'Change deleted succesfully.'})
+    
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    webview.settings['ALLOW_DOWNLOADS'] = True
+    webview.create_window('MCMAPP', app)
+    webview.start()
 

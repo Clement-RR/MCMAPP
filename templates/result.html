@@ -6,63 +6,397 @@
     <title>Result</title>
 
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <style>
+    #nodeTitle {
+            width: 230px;
+            padding: 15px;
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            border: none;
+            text-align: left;
+            outline: none;
+            transition: 0.4s;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+    .combined_result_table{
+        align-content: center;
+        width:100%;
+        
+    }
+    .combined_result_table td, th{
+        padding-right: 15px;
+    }
+    .input-container {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+    .NodeMDTTable{
+        position:fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #FAFBFC;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+    }
+    </style>
 
 </head>
 <body>
     <!-- Bootstrap 容器 -->
-    <div class="container">
+    <div  class="container">
 
         <!-- 第一部分：BPMN -->
-        <div>
-            <div class="col-12">
+        <div  class="col-12">
+            <div  >
                 <h2>Result</h2>
-                <object id="svgObject" type="image/svg+xml" data="/static/bpmn.svg" width="100%" height="400px"></object>
+                <object id="svgObject" type="image/svg+xml" data="/static/result_bpmn.svg" width="100%" height="400px"></object>
+            </div>
+            <div class="NodeMDTTable" id="NodeMDTTable">
+            </div>
+            <div >
+                <a href="#" class="btn" data-bs-toggle="collapse" data-bs-target="#collapseResultOverview" aria-expanded="false" aria-controls="collapseResultOverview">
+                  Result Overview
+                </a>
+                <!-- Collapsible content for the first card -->
+                <div class="collapse mt-3" id="collapseResultOverview">
+                    
+                        
+                    <table class="border p-3"  width="100%">
+                        <thead>
+                            <th>Process Step</th>
+                            <th>Ranking</th>
+                            <th>Methods</th>
+                            <th>Digital Tools</th>
+                        </thead>
+                        <tbody id="ResultOverview"></tbody>
+                    </table>
+                  
+                </div>
             </div>
         </div>
+        
+        <div id="nodeTitle" class="fs-5 fw-bold bg-primary text-white">Current process step: <span id="nodeName">____</span></div>
+        <div width="100%">
+            <table class="border p-3"  width="100%">
+                <thead>
+                    <th>Ranking</th>
+                    <th>Methods</th>
+                    <th>Digital Tools</th>
+                </thead>
+                <tbody id="NodeResultTable"></tbody>
 
-        <!-- 第二部分：Applicable M&DTs -->
-        <div class="row">
-            <div class="col-12">
-                <h2>Applicable M & DTs</h2>
-                <p><strong>Method:</strong> {{ max_vector_change['max_vector_change_methode']['Name'] }}</p>
-                <p><strong>Digital Tools:</strong> {{ max_vector_change['max_vector_change_DT']['Name'] }}</p>
-            </div>
+            </table>
         </div>
-
-        <!-- 第三部分：Combined Result -->
-        <div class="row">
-            <div class="col-12">
-                <h2>Combined Result</h2>
-                <div class="border p-3">{{ combined_result|safe }}</div>
-            </div>
+        
+        <div class="input-container">
+            <label for="responsible">Responsible:</label>
+            <input type="text" id="responsible" name="responsible" >
         </div>
-
+        <div class="input-container">
+            <label for="MDT">Method or digital tool used:</label>
+            <input type="text" id="MDT" name="MDT" >
+        </div>
+        <div class="input-container">
+            <label for="lessonsLearned">Lessons learned:</label>
+            <input type="text" id="lessonsLearned" name="lessonsLearned" class="w-100 p-3">
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <button class="left-button btn btn-success">Done</button>
+            <button class="deleteButton btn btn-danger" >Undo</button>
+        </div>
+    </div>
     </div>
 
 
    <script src="../static/js/bootstrap.bundle.min.js"></script>
 
  <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var nameColorDict = { name_color_dict,tojson };
-            var svgObject = document.getElementById('svgObject');
-
-            svgObject.addEventListener('load', function() {
-                var svgDoc = svgObject.contentDocument;
-                var svgElements = svgDoc.querySelectorAll('title');
-
-                svgElements.forEach(function(element) {
-                    var name = element.textContent.trim();
-                    if (nameColorDict[name]) {
-                        var parentG = element.parentElement;
-                        var path = parentG.querySelector('path');
-                        if (path) {
-                            path.setAttribute('fill', nameColorDict[name]);
-                        }
-                    }
-                });
+        
+        
+        /* click event to click node  */
+        document.addEventListener("DOMContentLoaded", function() {
+            MDT = {{MDT | tojson}};
+            ImgPath = {{ImgPath | tojson}};
+            let selectedNodeTitle = ''; // Store the title of the clicked node
+            let selectedNode = null; // Store the selected node
+            nodes = {}
+            const savedNodes = {}; // Store the state of saved nodes
+            const allNodes = [];
+            const saveButton = document.querySelector('.left-button');// left-button= saveButton
+            const deleteButton = document.querySelector('.deleteButton');
+            doneNodes = {{DoneNodes | tojson}}
+            console.log[doneNodes]
+            doneNodes.forEach(node => {
+                savedNodes[node] = true;
             });
-        });
+            console.log(savedNodes)
+            combResult = {{comb_res |tojson}};
+            combResult.forEach((array) => {
+            allNodes.push(combResult[combResult.indexOf(array)][0]);
+            });
+
+            //Populate Overview Table
+            document.getElementById('ResultOverview').innerHTML = ``
+                        for (let x=0; x<allNodes.length/4; x++){
+                            const table = document.createElement('tr')
+                            table.innerHTML = table.innerHTML + `
+                            <td>${combResult[x*4]['0']} </td>
+                            <td>${combResult[x*4]['3']}</td>
+                            <td>${combResult[x*4]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[x*4]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                            <td>${combResult[x*4]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[x*4]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                            document.getElementById('ResultOverview').appendChild(table)
+                            for (let i=1; i<4; i++){                        
+                                const table = document.createElement('tr')
+                                table.innerHTML = table.innerHTML + `
+                                <td> </td>
+                                <td>${combResult[x*4+i]['3']}</td>
+                                <td>${combResult[x*4+i]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[x*4+i]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                                <td>${combResult[x*4+i]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[x*4+i]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                                document.getElementById('ResultOverview').appendChild(table)
+                            }
+                        };
+            
+
+            // Extract task flow names
+            const svgObject = document.getElementById("svgObject");
+            svgObject.addEventListener("load", function() {
+                const svgDoc = svgObject.contentDocument || svgObject.getSVGDocument();
+
+                // Get all elements with the class "node"
+                nodes = svgDoc.querySelectorAll("g.node");
+
+
+                    
+                    
+                        // Remove fill color for all nodes
+                        nodes.forEach(n => {
+                            const shape = n.querySelector("path");
+                            
+                            if (shape) {
+                               const title = n.querySelector("title").textContent;
+                               
+                                if (savedNodes[title]) {
+                                    shape.style.fill = "green";  // Keep saved nodes in green
+                                } else {
+                                      // Clear the color for unsaved nodes
+                                    if (savedNodes[allNodes[0]] != undefined) {
+                                        
+                                        if (n.querySelector("title").textContent == allNodes[allNodes.indexOf(doneNodes[doneNodes.length-1])+4]){
+                                            selectedNode = n                                            
+                                            selectedNodeTitle = selectedNode.querySelector("title").textContent
+                                            document.getElementById("nodeName").textContent = selectedNodeTitle
+                                            const shape = selectedNode.querySelector("path");
+                                            if (shape) {
+                                                shape.style.fill = "yellow";
+                                            }
+                                            document.getElementById('NodeResultTable').innerHTML = ``
+                                            for (let i=0; i<4; i++){                        
+                                                const table = document.createElement('tr')
+                                                table.innerHTML = table.innerHTML + `
+                                                <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['3']}</td>
+                                                <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                                                <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                                                document.getElementById('NodeResultTable').appendChild(table)
+                                            }
+                                        }   
+                                    }
+                                    else{
+                                        shape.style.fill = "white";
+                                    }
+                                }
+                            }
+                            if (n.querySelector("title").textContent == 'Start') {
+                                selectedNode = n
+                                if (savedNodes[allNodes[0]] == undefined) {                             
+                                    const shape = selectedNode.querySelector("ellipse");
+                                    if (shape) {
+                                        shape.style.fill = "yellow";
+                                    }
+                                }
+                                else {
+                                    const shape = selectedNode.querySelector("ellipse");
+                                    if (shape) {
+                                        shape.style.fill = "green";
+                                    }
+                                }
+                            }
+                            n.addEventListener('click', function() {
+                                document.getElementById('NodeMDTTable').innerHTML = ``
+                                const table = document.createElement('table')
+                                header = document.createElement('thead')
+                                header.innerHTML = header.innerHTML + `<th>${this.querySelector("title").textContent}</th>`
+                                table.appendChild(header)
+                                const tbody = document.createElement('tbody')
+                                for (let i=0; i<4; i++){                        
+                                    const trow = document.createElement('tr')
+                                    trow.innerHTML = trow.innerHTML + `
+                                    <td>${combResult[allNodes.indexOf(this.querySelector("title").textContent)+i]['3']}</td>
+                                    <td>${combResult[allNodes.indexOf(this.querySelector("title").textContent)+i]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(this.querySelector("title").textContent)+i]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                                    <td>${combResult[allNodes.indexOf(this.querySelector("title").textContent)+i]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(this.querySelector("title").textContent)+i]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                                    tbody.appendChild(trow)
+                                }
+                                table.appendChild(tbody)
+                                document.getElementById('NodeMDTTable').appendChild(table)
+                                document.getElementById('NodeMDTTable').innerHTML = document.getElementById('NodeMDTTable').innerHTML + `
+                                <button onclick="closeWindow()">Close</button>`
+                            })
+                        });
+                
+            });
+            /* save data */
+            saveButton.addEventListener('click', function() {
+                const inputs = document.querySelectorAll('.dropdown-container select, .checkbox-container input[type="checkbox"]');
+                const shape = selectedNode.querySelector("ellipse");
+                if (shape) {
+                    shape.style.fill = "green";
+                    nodes.forEach(element => {
+                        if (element.querySelector("title").textContent == allNodes[0]){
+                            selectedNode = element
+                        }
+                    });
+                    selectedNodeTitle = selectedNode.querySelector("title").textContent
+                    document.getElementById("nodeName").textContent = selectedNodeTitle
+                    const shape2 = selectedNode.querySelector("path");
+                    if (shape2) {
+                        shape2.style.fill = "yellow";
+                    }
+                    document.getElementById('NodeResultTable').innerHTML = ``
+                    for (let i=0; i<4; i++){                        
+                        const table = document.createElement('tr')
+                        table.innerHTML = table.innerHTML + `
+                        <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['3']}</td>
+                        <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                        <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                        document.getElementById('NodeResultTable').appendChild(table)
+                    }
+                }
+                else {
+                    const data = {
+                        Name: selectedNodeTitle,
+                        responsible: document.getElementById('responsible').value.toString(),
+                        MDT: document.getElementById('MDT').value.toString(),
+                        lessonsLearned: document.getElementById('lessonsLearned').value.toString(),
+                    };
+                    fetch('/save_lessons_learned', {  // Flask endpoint
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ data })
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        if (json.status === 'success') {
+
+                            if (selectedNode) {
+                                const shape = selectedNode.querySelector("path");
+                                if (shape) {
+                                    shape.style.fill = "green";  // Change node color to green
+                                    savedNodes[selectedNodeTitle] = true; // Mark node as saved
+                                  
+                                
+                                    if (allNodes.indexOf(selectedNodeTitle)+4 < allNodes.length) {
+                                        nodes.forEach(element => {
+                                            if (element.querySelector("title").textContent == allNodes[allNodes.indexOf(selectedNodeTitle)+4]){
+                                                selectedNode = element
+                                            }
+                                        });
+                                        selectedNodeTitle = selectedNode.querySelector("title").textContent
+                                        document.getElementById("nodeName").textContent = selectedNodeTitle
+                                        const shape = selectedNode.querySelector("path");
+                                        if (shape) {
+                                            shape.style.fill = "yellow";
+                                        }
+                                        document.getElementById('NodeResultTable').innerHTML = ``
+                                        for (let i=0; i<4; i++){                        
+                                            const table = document.createElement('tr')
+                                            table.innerHTML = table.innerHTML + `
+                                            <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['3']}</td>
+                                            <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                                            <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                                            document.getElementById('NodeResultTable').appendChild(table)
+                                        }
+
+                                    }
+                                }
+                                
+                            };
+                            
+                        };
+                    });
+                }
+                
+            });
+            //delete data
+            deleteButton.addEventListener('click', function(){
+                if (selectedNode) {
+                    const shape = selectedNode.querySelector("path");
+                    if (shape) {
+                        fetch('/delete_process_step', {  // Flask endpoint
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(json => {
+                            if (json.status === 'success') {
+                            
+                                shape.style.fill = "white";  // Change node color to white
+                                savedNodes[selectedNodeTitle] = false; // Mark node as not saved
+                                
+                            
+                                if (allNodes.indexOf(selectedNodeTitle)-4 >= 0) {
+                                    nodes.forEach(element => {
+                                        if (element.querySelector("title").textContent == allNodes[allNodes.indexOf(selectedNodeTitle)-4]){
+                                            selectedNode = element
+                                        }
+                                    });
+                                    selectedNodeTitle = selectedNode.querySelector("title").textContent
+                                    document.getElementById("nodeName").textContent = selectedNodeTitle
+                                    const shape = selectedNode.querySelector("path");
+                                    if (shape) {
+                                        shape.style.fill = "yellow";
+                                    }
+                                    document.getElementById('NodeResultTable').innerHTML = ``
+                                    for (let i=0; i<4; i++){                        
+                                        const table = document.createElement('tr')
+                                        table.innerHTML = table.innerHTML + `
+                                        <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['3']}</td>
+                                        <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['1']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['1'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>
+                                        <td>${combResult[allNodes.indexOf(selectedNodeTitle)+i]['2']} <a href="#" onclick="window.open('${ImgPath[MDT.indexOf(combResult[allNodes.indexOf(selectedNodeTitle)+i]['2'])]}', '_blank')"><img src='../static/images/info-circle-fill.svg'></a></td>`
+                                        document.getElementById('NodeResultTable').appendChild(table)
+                                    }
+                                }
+                                else {
+                                    nodes.forEach(n =>{
+                                        if (n.querySelector("title").textContent == 'Start') {
+                                            selectedNode = n                          
+                                                const shape2 = selectedNode.querySelector("ellipse");
+                                                if (shape2) {
+                                                    shape2.style.fill = "yellow";
+                                                }
+                                        }
+                                    })
+
+                                }
+                            }
+                        })
+                    }
+                }
+            });
+            
+                
+        })
+        function closeWindow(){
+                document.getElementById('NodeMDTTable').innerHTML = ``
+            }
+        
+        
     </script>
 </body>
 </html>

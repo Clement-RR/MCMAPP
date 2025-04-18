@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Step 3: Select Change Attributes</title>
+    <title>Step 2: Select change attributes</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
 
     <style>
-
+       .body{
+        background-color: white;
+       }
        .info-icon {
             margin-left: 8px;
             cursor: pointer;
@@ -14,7 +16,7 @@
     </style>
 </head>
 <body class="container">
-    <h1 class="mt-4">Change Attributes</h1>
+    <h1 class="mt-4">Change attributes</h1>
 
     <div class="label-container form-check mt-4">
         <input type="checkbox" class="form-check-input" id="impactOnInternal" {% if 'impactOnInternal' in previous_CA_columns %}checked{% endif %}>

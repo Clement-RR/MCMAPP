@@ -97,12 +97,44 @@ def calculate_positions(positions, sequence_flows, start_element, horizontal_spa
                 offset = (i - mid_index) * delta
             positions[target] = (old_x + horizontal_spacing, old_y + offset)
             calculate_positions(positions, sequence_flows, target, horizontal_spacing, vertical_spacing, visited)
+            
 def generate_bpmn_svg(file_path, output_svg_path):
     # Read dsm file
     df = pd.read_csv(file_path)
-    dsm_df = pd.read_csv(file_path, index_col=2)
+    dsm_df = pd.read_csv(file_path, index_col=2, header=0)
     print(dsm_df)
+    # Create Data frame with only process steps present in the result bpmn
+    i = 1
+    s = 0
+    dsm_df_cols= dsm_df.columns.tolist()
+    for element in dsm_df_cols[2:]:
+        i = i+1
+        if not element in df.Name.tolist():    
+            s = i
+            while not dsm_df_cols[i] in df.Name.tolist():
+                if s >= len(dsm_df_cols)-1:
+                    while not dsm_df_cols[i] in df.Name.tolist():
+                        s = s-1
+                        dsm_df_cols[i] = dsm_df_cols[s+1]
+                    break
+                dsm_df_cols[i] = dsm_df_cols[s+1]
+                s = s + 1         
+              
+        
+                
+    dsm_df.columns = tuple(dsm_df_cols)
+    def same_merge(x): return ';'.join(x[x.notnull()].astype(str))
 
+# Define new DataFrame that merges columns with same names together
+    dsm_df = dsm_df.groupby(level=0, axis=1).apply(lambda x: x.apply(same_merge, axis=1))
+    for element in dsm_df.columns.tolist():
+        dsm_df.loc[element, element] = ''
+    dsm_df=dsm_df[:len(dsm_df.index)-2]
+
+   
+
+
+    print(dsm_df)
     # Initialize swimlanes and elements
     swimlanes = {}
     elements = {}
@@ -145,7 +177,7 @@ def generate_bpmn_svg(file_path, output_svg_path):
             if not df[df['Name'] == element].empty:
                 start_swimlanes[element] = df[df['Name'] == element]['Swimlane'].values[0]
         # Check if the element has no outgoing elements (no 'S' or 'M' in its row)
-        if not any(dsm_df.loc[element].astype(str).str.contains('S|M', na=False)):
+        if not any(dsm_df.drop(columns=['Swimlane', 'Type']).loc[element].astype(str).str.contains('S|M', na=False)):
             end_events.append(element)
             if not df[df['Name'] == element].empty:
                 end_swimlanes[element] = df[df['Name'] == element]['Swimlane'].values[0]
@@ -153,7 +185,7 @@ def generate_bpmn_svg(file_path, output_svg_path):
     print("End events:", end_events)
     # Add startevent to swimlanes
     if start_events:
-        unique_start_event = 'startevent'
+        unique_start_event = 'Start'
         elements[unique_start_event] = 'StartEvent'
         for element in start_events:
             if element in start_swimlanes:
@@ -164,7 +196,7 @@ def generate_bpmn_svg(file_path, output_svg_path):
 
     # Add endevent to swimlanes
     if end_events:
-        unique_end_event = 'endevent'
+        unique_end_event = 'End'
         elements[unique_end_event] = 'EndEvent'
         for element in end_events:
             if element in end_swimlanes:
@@ -181,31 +213,42 @@ def generate_bpmn_svg(file_path, output_svg_path):
     final_sequence_flows = {}
     for element, targets in sequence_flows.items():
         if len(targets) > 1:
-            row = dsm_df.loc[element]
-            gate_type = None
-            if any('AS' in str(val) for val in row):
-                gate_type = 'AND'
-            elif any('XS' in str(val) for val in row):
-                gate_type = 'XOR'
-
-            if gate_type:
-                gate_name = f'{gate_type}_gate_{gate_counter}'
-                elements[gate_name] = gate_type
-                gate_counter += 1
-                if element in start_swimlanes:
-                    swimlane = start_swimlanes[element]
-                elif not df[df['Name'] == element].empty:
-                    swimlane = df[df['Name'] == element]['Swimlane'].values[0]
+            #print(any(not set(targets).isdisjoint(set(sequence_flows[target])) for target in targets))
+            #if not any(not set(targets).isdisjoint(set(sequence_flows[target])) for target in targets):
+                if not element == 'Start':
+                    row = dsm_df.loc[element]
+                    gate_type = None
+                    if any('AS' in str(val) for val in row):
+                        gate_type = 'AND'
+                    elif any('XS' in str(val) for val in row):
+                        gate_type = 'XOR'
                 else:
-                    swimlane = 'default_swimlane'
-                if swimlane not in swimlanes:
-                    swimlanes[swimlane] = []
-                swimlanes[swimlane].insert(swimlanes[swimlane].index(element) + 1, gate_name)
-                final_sequence_flows[element] = [gate_name]
-                final_sequence_flows[gate_name] = targets
-                print(f"Added {elements[gate_name]} '{gate_name}' after '{element}' with targets {targets}")
-            else:
-                final_sequence_flows[element] = targets
+                    row = dsm_df.loc[targets[0]]
+                    gate_type = None
+                    if any('AS' in str(val) for val in row):
+                        gate_type = 'AND'
+                    elif any ('XS' in str(val) for val in row):
+                        gate_type = 'XOR'
+                if gate_type:
+                    gate_name = f'{gate_type}_gate_{gate_counter}'
+                    elements[gate_name] = gate_type
+                    gate_counter += 1
+                    if element in start_swimlanes:
+                        swimlane = start_swimlanes[element]
+                    elif not df[df['Name'] == element].empty:
+                        swimlane = df[df['Name'] == element]['Swimlane'].values[0]
+                    else:
+                        swimlane = 'default_swimlane'
+                    if swimlane not in swimlanes:
+                        swimlanes[swimlane] = []
+                    swimlanes[swimlane].insert(swimlanes[swimlane].index(element) + 1, gate_name)
+                    final_sequence_flows[element] = [gate_name]
+                    final_sequence_flows[gate_name] = targets
+                    print(f"Added {elements[gate_name]} '{gate_name}' after '{element}' with targets {targets}")
+                else:
+                    final_sequence_flows[element] = targets
+            #else:
+                #final_sequence_flows[element] = targets
         else:
             final_sequence_flows[element] = targets
 
@@ -221,23 +264,24 @@ def generate_bpmn_svg(file_path, output_svg_path):
     updated_sequence_flows = final_sequence_flows.copy()
     for target, elements_with_same_target in inverted_flows.items():
         if len(elements_with_same_target) > 1:
-            xor_gate_name = f'XOR_gate_{gate_counter}'
-            elements[xor_gate_name] = 'XOR'
-            gate_counter += 1
-            for element in elements_with_same_target:
-                updated_sequence_flows[element] = [xor_gate_name]
-                print(f"Updated target of '{element}' to '{xor_gate_name}'")
-            updated_sequence_flows[xor_gate_name] = [target]
-            print(f"Set target of '{xor_gate_name}' to '{target}'")
-            if target in start_swimlanes:
-                swimlane = start_swimlanes[target]
-            elif not df[df['Name'] == target].empty:
-                swimlane = df[df['Name'] == target]['Swimlane'].values[0]
-            else:
-                swimlane = 'default_swimlane'
-            if xor_gate_name not in swimlanes.get(swimlane, []):
-                swimlanes.setdefault(swimlane, []).insert(0, xor_gate_name)
-            print(f"Added XOR gate '{xor_gate_name}' before '{target}' with sources {elements_with_same_target}")
+            if not any(not set(elements_with_same_target).isdisjoint(set(inverted_flows[target])) for target in elements_with_same_target):
+                xor_gate_name = f'XOR_gate_{gate_counter}'
+                elements[xor_gate_name] = 'XOR'
+                gate_counter += 1
+                for element in elements_with_same_target:
+                    updated_sequence_flows[element] = [xor_gate_name]
+                    print(f"Updated target of '{element}' to '{xor_gate_name}'")
+                updated_sequence_flows[xor_gate_name] = [target]
+                print(f"Set target of '{xor_gate_name}' to '{target}'")
+                if target in start_swimlanes:
+                    swimlane = start_swimlanes[target]
+                elif not df[df['Name'] == target].empty:
+                    swimlane = df[df['Name'] == target]['Swimlane'].values[0]
+                else:
+                    swimlane = 'default_swimlane'
+                if xor_gate_name not in swimlanes.get(swimlane, []):
+                    swimlanes.setdefault(swimlane, []).insert(0, xor_gate_name)
+                print(f"Added XOR gate '{xor_gate_name}' before '{target}' with sources {elements_with_same_target}")
 
     sequence_flows = updated_sequence_flows
     print("Final sequence flows:", sequence_flows)
@@ -307,11 +351,14 @@ def generate_bpmn_svg(file_path, output_svg_path):
             style = ''
             width = '0.5'
             height = '1'
+            G.add_node(node, pos=f"{pos[0]},{pos[1]}!", shape=shape, style=style, width=width, height=height, label=node_type)
         elif node_type == 'StartEvent' or node_type == 'EndEvent':
             shape = 'circle'
             width = '1'
             height = '1'
-        G.add_node(node, pos=f"{pos[0]},{pos[1]}!", shape=shape, style=style, width=width, height=height)
+            G.add_node(node, pos=f"{pos[0]},{pos[1]}!", shape=shape, style=style, width=width, height=height)
+        else:
+            G.add_node(node, pos=f"{pos[0]},{pos[1]}!", shape=shape, style=style, width=width, height=height)
 
     for src, targets in sequence_flows.items():
         for target in targets:
@@ -327,7 +374,7 @@ def generate_bpmn_svg(file_path, output_svg_path):
     G.layout(prog='neato')
     G.draw(output_svg_path)
 
-def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file):
+def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file, n, m):
     df1 = pd.read_csv(dmm_process_file)
     df1_names = df1['Name']
     df1 = df1.drop(columns=['Name'])
@@ -343,15 +390,13 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
     dt_names = df8[0]
     df8 = df8.drop(columns=[0,2])
 
-    n = 23 #Zahl der MA
-    m = 23 #Zahl der Methode
     dmm_process = df1.values
     dmm_change = df2.values
     change_vector = dmm_change.T
-    methode = df8.iloc[:m].values
-    digital_tools = df8.iloc[m:].values
-    dmm_methode = df3.iloc[:, 1:].values
-    dmm_dt = df4.iloc[:, 1:].values
+    methode = df8.iloc[:n].values
+    digital_tools = df8.iloc[n:].values
+    dmm_methode = np.identity(n, dtype=int)
+    dmm_dt = np.identity(m, dtype=int)
     dmm_PA_CA = df7.values
     dmm_CA_MA = df5.iloc[:, 1:n+1].values
     dmm_CA_DT = df5.iloc[:, n+1:].values
@@ -359,6 +404,7 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
     dmm_PA_DT = df6.iloc[:, n+1:].values
 
     dmm_methode = dmm_methode*methode
+    print(dmm_methode)
     dmm_dt = dmm_dt*digital_tools
     #Change related process
     print("Correlation result:")
@@ -391,8 +437,8 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
     related_process = combined[combined['R_change_process'] > threshold]
     print(related_process)
 
-    methode_names = dt_names[:m]
-    dt_names = dt_names[m:]
+    methode_names = dt_names[:n]
+    dt_names = dt_names[n:]
 
 
     df_vector_change_methode = pd.DataFrame({
@@ -417,29 +463,23 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dm
     max_values_info = []
 
     for name in related_process['Name']:
-        max_methode_values = df_correlation_process_methode.loc[name].nlargest(2)
-        max_dt_values = df_correlation_process_DT.loc[name].nlargest(2)
-
-        max_values_info.append({
-            'Name': name,
-            'Methode_1': max_methode_values.index[0],
-            'methode_value_1': max_methode_values.iloc[0],
-            'Methode_2': max_methode_values.index[1],
-            'methode_value_2': max_methode_values.iloc[1],
-            'DT_1': max_dt_values.index[0],
-            'DT_value_1': max_dt_values.iloc[0],
-            'DT_2': max_dt_values.index[1],
-            'DT_value_2': max_dt_values.iloc[1]
-        })
-
-    print(max_values_info)
+        max_methode_values = df_correlation_process_methode.loc[name].nlargest(4)
+        max_dt_values = df_correlation_process_DT.loc[name].nlargest(4)
+        for i in range(0,4):
+            max_values_info.append({
+                'Name': name,
+                'Methods': max_methode_values.index[i],
+                'Digital Tools': max_dt_values.index[i],
+                'Ranking': i+1,            
+            })
+        
     max_values_df = pd.DataFrame(max_values_info)
-    combined_result = related_process.merge(max_values_df, on='Name')
-    print(combined_result)
+    combined_result = max_values_df.set_index(['Name','Ranking'])
+    print(max_values_df)
 
-    name_color_dict = {row['Name']: 'red' for _, row in combined_result.iterrows()}
-
-    return max_vector_change, combined_result, name_color_dict
+    name_color_dict = {row['Name']: 'red' for _, row in max_values_df.iterrows()}
+    
+    return max_vector_change, combined_result, max_values_df, related_process
 
 # Usage example
 input_path = 'D:/MA/example/bpmn.csv'
@@ -458,5 +498,23 @@ dmm_dt_file = os.path.join(SETTING_FOLDER, 'DMM_DT.csv')
 dmm_change_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_CA_MDT.csv')
 dmm_process_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_PA_MDT.csv')
 
+def result_initialization(input_file_path,csv_file_path, Result_Tasks):
+    with open(input_file_path, mode='r', newline='', encoding='utf-8') as input, open(csv_file_path, mode='w', newline='', encoding='utf-8') as out:
+            inp = csv.DictReader(input) 
+            dsm_fieldnames = inp.fieldnames
+            writer = csv.DictWriter(out, fieldnames=dsm_fieldnames)
+            
+            writer.writeheader()
 
+            for row in inp:
+                dsm_row = {field: row[field] for field in dsm_fieldnames}
+                
+                for Task in Result_Tasks:      
+                                 
+                    if dsm_row['Name'] == Task:
+                        
+                        writer.writerow(dsm_row)
+            input.close
+            out.close
+    
 #correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file,dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file)

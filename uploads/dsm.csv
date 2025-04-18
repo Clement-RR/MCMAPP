@@ -1,12 +1,12 @@
-Name,EV1,EV2,EV3,EV4,EV5,EV6,EV7,EV8,EV9,EV10,EV11
-EV1,,XS,XS,,,,,,,,
-EV2,,,,S,,,,,,,
-EV3,,,,S,,,,,,,
-EV4,,,,,S,,,,,,
-EV5,,,,,,AS,,,AS,,AS
-EV6,,,,,,,S,,,,
-EV7,,,,,,,,S,,,
-EV8,,,,,,,,,,,
-EV9,,,,,,,,,,S,
-EV10,,,,,,,,S,,,
-EV11,,,,,,,,S,,,
+Name,Step 1,Step 2,Step 3,Step 4,Step 5,Step 6,Step 7,Step 8,Step 9,Step 10,Step 11
+Step 1,,XS,XS,,,,,,,,
+Step 2,,,,S,,,,,,,
+Step 3,,,,S,,,,,,,
+Step 4,,,,,S,,,,,,
+Step 5,,,,,,AS,,,AS,,AS
+Step 6,,,,,,,S,,,,
+Step 7,,,,,,,,S,,,
+Step 8,,,,,,,,,,,
+Step 9,,,,,,,,,,S,
+Step 10,,,,,,,,S,,,
+Step 11,,,,,,,,S,,,

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Input Methods and Digital Tools</title>
+    <title>Input methods and digital tools</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
         <style>
 
@@ -293,6 +293,7 @@
             </div>
                             
             <div class="d-flex mt-2">
+                                <button id="addnew" class="btn btn-primary m-2" onclick="window.open('/addnew', '_blank')">Add new</button>
                                 <button id="save" class="btn btn-primary m-2">Save</button>
                                 <button id="closeButton" class="btn btn-secondary m-2" onclick="window.close();">Finish</button>
             </div>
@@ -342,15 +343,18 @@ for (i = 0; i < MDT.slice(MDT.indexOf("3D Modeling and Animation")).length; i++)
         $('[data-toggle="popover"]').popover();
     });
 
+    
     document.getElementById('save').addEventListener('click', function() {
         const inputs = document.querySelectorAll('.label-container input[type="checkbox"]');
         const labelsStatus = [];
 
         inputs.forEach(input => {
             const labelID = input.id;
+            const imgpath = ImgPath[MDT.indexOf(labelID)]
             labelsStatus.push({
                 id: labelID,
-                checked: input.checked ? 1 : 0
+                checked: input.checked ? 1 : 0,
+                ImgPath: imgpath
             });
         });
 

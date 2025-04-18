@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Input new method or digital tool attributes</title>
+
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <style>
+        .dropdown-container {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .input-container {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+    <body class="bg-light container-flow">
+    
+        <h1 class="m-4" id="Title">Input new method</h1>
+       
+    
+    
+        <div class="container-fluid m-4"> 
+          <div class="row">
+            <div class="col-md-6 ml-5">
+            
+                <div class="input-container">
+                    <label for="MDTName">Name:</label>
+                    <input type="text" id="MDTName" name="MDTName">
+                </div>
+               <div>
+                <h5>Content attributes</h5>
+               </div>
+               <div id="ContentAttributes">
+                <div class="dropdown-container" id="AutomationIntegration">
+                    <label for="AutomationIntegration">Automation/Integration</label>
+                </div>
+    
+                <div class="dropdown-container" id="AnalysisEvaluation">
+                    <label for="AnalysisEvaluation">Analysis/Evaluation</label>
+                </div>
+    
+                <div class="dropdown-container" id="CollaborationCommunication">
+                    <label for="CollaborationCommunication">Collaboration/Communication</label>
+                </div>
+    
+                <div class="dropdown-container" id="ControllingMonitoring">
+                    <label for="ControllingMonitoring">Controlling/Monitoring</label>
+                </div>
+    
+                <div class="dropdown-container" id="DeploymentExecution">
+                    <label for="DeploymentExecution">Deployment/Execution</label>
+                </div>
+    
+                <div class="dropdown-container" id="Documentation">
+                    <label for="Documentation">Documentation</label>
+                </div>
+    
+                <div class="dropdown-container" id="IdeationDevelopment">
+                    <label for="IdeationDevelopment">Ideation/Development</label>
+                </div>
+    
+                <div class="dropdown-container" id="PersonalDevelopmentTraining">
+                    <label for="PersonalDevelopmentTraining">Personal Development/Training</label>
+                </div>
+    
+                <div class="dropdown-container" id="Planning">
+                    <label for="Planning">Planning</label>
+                </div>
+    
+                <div class="dropdown-container" id="Visualization">
+                    <label for="Visualization">Visualization</label>
+                </div>
+               </div>
+            </div>
+    
+            <!-- Right panel -->
+           <div class="col-md-6">
+                <div>
+                    <button class="btn btn-primary" onclick="ToggleMDT()">Toggle method/digital tool</button>
+                </div>
+                <div >
+                    <h5 id="ApplicationAttributes">Application attributes (M)</h5>
+                </div>
+                <div>
+                    <div class="dropdown-container" id="AA1">
+                        <label for="AA1" id="AA1Label">Average execution time</label>
+                    </div>
+                    <div class="dropdown-container" id="AA2">
+                        <label for="AA2" id="AA2Label">Scalability potential</label>
+                    </div>
+                    <div class="dropdown-container" id="AA3">
+                        <label for="AA3" id="AA3Label">Robustness of the results</label>
+                    </div>
+                    <div class="dropdown-container" id="AA4">
+                        <label for="AA4" id="AA4Label">Quality of the results</label>
+                    </div>
+                    <div class="dropdown-container" id="AA5">
+                        <label for="AA5" id="AA5Label">Complexity level</label>
+                    </div>
+                    <div class="dropdown-container" id="AA6">
+                        <label for="AA6" id="AA6Label">Execution effort</label>
+                    </div>
+                    <div class="dropdown-container" id="AA7">
+                        <label for="AA7" id="AA7Label">User-friendliness</label>
+                    </div>
+                    <div class="dropdown-container" id="AA8">
+                        <label for="AA8" id="AA8Label">Required training time</label>
+                    </div>
+                    <div class="dropdown-container" id="AA9">
+                        <label for="AA9" id="AA9Label">Customization potential</label>
+                    </div>
+                </div>
+        
+            </div>
+         <div>           
+            <button class="left-button btn btn-success" id="save" onclick="saveData()">Add</button>            
+         </div>
+
+        </div>
+        </div>
+    </body> 
+
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.onload = function() {
+            createDropdowns();
+        };
+
+        function createDropdowns() {
+            const dropdownPlaces = document.querySelectorAll('.dropdown-container');
+
+            // for each container
+            dropdownPlaces.forEach(function(container) {
+                const select = document.createElement('select');
+                select.id = container.id ;
+
+                for (let i = 1; i <= 10; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    select.appendChild(option);
+                }
+
+                // If the container's ID is not in previous_CA_columns, disable the dropdown
+              
+                container.prepend(select);
+            });
+        }
+
+        function ToggleMDT() {
+            if (document.getElementById('Title').innerHTML === 'Input new method'){
+
+                document.getElementById('Title').innerHTML = 'Input new digital tool'
+                document.getElementById('ApplicationAttributes').innerHTML = 'Application Attributes (DT)'
+                document.getElementById('AA1Label').innerHTML = 'Implementation effort'
+                document.getElementById('AA3Label').innerHTML = 'Costs'
+                document.getElementById('AA6Label').innerHTML = 'Ease of access'
+                document.getElementById('AA8Label').innerHTML = 'Necessary expertise'
+                document.getElementById('AA9Label').innerHTML = 'Provision for support'
+            }
+            else {
+                document.getElementById('Title').innerHTML = 'Input new method'
+                document.getElementById('ApplicationAttributes').innerHTML = 'Application Attributes (M)'
+                document.getElementById('AA1Label').innerHTML = 'Average execution time'
+                document.getElementById('AA3Label').innerHTML = 'Robustness of the results'
+                document.getElementById('AA6Label').innerHTML = 'Execution effort'
+                document.getElementById('AA8Label').innerHTML = 'Required training time'
+                document.getElementById('AA9Label').innerHTML = 'Customization potential'
+            }
+        }
+
+
+        /* save data */
+        function saveData() {
+            if (document.getElementById('Title').innerHTML === 'Input new method'){
+                const MDT = 0
+            }
+            else{
+                const MDT = 1
+            }
+            const data = {
+                MDTName: document.getElementById('MDTName').value.toString(),
+                AutomationIntegration: document.getElementById('AutomationIntegration').querySelector('select').value,
+                AnalysisEvaluation: document.getElementById('AnalysisEvaluation').querySelector('select').value,
+                CollaborationCommunication: document.getElementById('CollaborationCommunication').querySelector('select').value,
+                ControllingMonitoring: document.getElementById('ControllingMonitoring').querySelector('select').value,
+                DeploymentExecution: document.getElementById('DeploymentExecution').querySelector('select').value,
+                Documentation: document.getElementById('Documentation').querySelector('select').value,
+                IdeationDevelopment: document.getElementById('IdeationDevelopment').querySelector('select').value,
+                PersonalDevelopmentTraining: document.getElementById('PersonalDevelopmentTraining').querySelector('select').value,
+                Planning: document.getElementById('Planning').querySelector('select').value,
+                Visualization: document.getElementById('Visualization').querySelector('select').value,
+            };
+
+            fetch('/save_method_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Data saved successfully.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100); // 0.1s delay
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+            window.close();
+        }
+
+        window.onload = function() {
+            createDropdowns();
+        };
+
+        // Function to populate input fields and dropdowns
+    
+
+    </script>
+
+
+</body>
+</html>
