@@ -374,14 +374,12 @@ def generate_bpmn_svg(file_path, output_svg_path):
     G.layout(prog='neato')
     G.draw(output_svg_path)
 
-def correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file, n, m):
+def correlation_analysis(dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file, n, m):
     df1 = pd.read_csv(dmm_process_file)
     df1_names = df1['Name']
     df1 = df1.drop(columns=['Name'])
     df1 = df1.iloc[:, :57]
     df2 = pd.read_csv(dmm_change_file)
-    df3 = pd.read_csv(dmm_methode_file)
-    df4 = pd.read_csv(dmm_dt_file)
     df5 = pd.read_csv(dmm_change_mdt_file)
     df6 = pd.read_csv(dmm_process_mdt_file)
     df7 = pd.read_csv(dmm_pa_ca_file)

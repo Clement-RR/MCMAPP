@@ -308,8 +308,6 @@ def result():
     dmm_change_file = os.path.join(UPLOAD_FOLDER, 'change_vector.csv')
     selected_M_DT_file = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
     dmm_pa_ca_file = os.path.join(SETTING_FOLDER, 'DMM_PA_CA.csv')
-    dmm_methode_file = os.path.join(SETTING_FOLDER, 'DMM_Methode.csv')
-    dmm_dt_file = os.path.join(SETTING_FOLDER, 'DMM_DT.csv')
     dmm_change_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_CA_MDT.csv')
     dmm_process_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_PA_MDT.csv')
     load_selected_MDT()
@@ -317,8 +315,7 @@ def result():
     m=len(MDT[MDT.index("3D Modeling and Animation"):])
 
     max_vector_change, combined_result, ResultList, related_process = service.correlation_analysis(
-        dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file,
-        dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file,
+        dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file,
         n, m
     )
     try:

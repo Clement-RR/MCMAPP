@@ -1,2 +1,2 @@
 changeName,changeId,changeDescription,responsibility,timeframe,changeCause,localization,departments,changeStatus,timeOfOccurrence,lessonsLearned,impactOnInternal,impactOnExternal,efforts,costs,availableDataInformation,dependencyLevel,changePropagation,changeReoccurrence,complexity,challenges,duration,relevance,urgency
-,1,,,,,,,,,,3,2,6,3,3,4,3,3,4,4,3,2,3
+AGV Einführung,1,Einführung von AGVs,,2025-04-30T10:00,Verbesserung der Logistik,Lager,Logistik,Anstehend,2025-05-07T16:30,,7,0,5,7,9,3,1,1,3,3,3,9,9
