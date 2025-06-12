@@ -306,16 +306,17 @@ def save_DMT():
 def result():
     dmm_process_file = os.path.join(UPLOAD_FOLDER, 'pa_pi.csv')
     dmm_change_file = os.path.join(UPLOAD_FOLDER, 'change_vector.csv')
+    dmm_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_MDT.csv')
     selected_M_DT_file = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
     dmm_pa_ca_file = os.path.join(SETTING_FOLDER, 'DMM_PA_CA.csv')
-    dmm_change_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_CA_MDT.csv')
-    dmm_process_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_PA_MDT.csv')
+    dmm_change_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_CA_MDT_New.csv')
+    dmm_process_mdt_file = os.path.join(SETTING_FOLDER, 'DMM_PA_MDT_New.csv')
     load_selected_MDT()
     n=len(MDT[:MDT.index("3D Modeling and Animation")])
     m=len(MDT[MDT.index("3D Modeling and Animation"):])
 
     max_vector_change, combined_result, ResultList, related_process = service.correlation_analysis(
-        dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file,
+        dmm_process_file, dmm_change_file, dmm_mdt_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file,
         n, m
     )
     try:

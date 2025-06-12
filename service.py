@@ -233,25 +233,28 @@ def generate_bpmn_svg(file_path, output_svg_path):
                     gate_name = f'{gate_type}_gate_{gate_counter}'
                     elements[gate_name] = gate_type
                     gate_counter += 1
+                    print("past1")
                     if element in start_swimlanes:
+                        print("past2")
                         swimlane = start_swimlanes[element]
                     elif not df[df['Name'] == element].empty:
+                        print("past3")
                         swimlane = df[df['Name'] == element]['Swimlane'].values[0]
                     else:
-                        swimlane = 'default_swimlane'
-                    if swimlane not in swimlanes:
-                        swimlanes[swimlane] = []
+                        print("past4")
+                        swimlane = start_swimlanes[targets[0]]
                     swimlanes[swimlane].insert(swimlanes[swimlane].index(element) + 1, gate_name)
                     final_sequence_flows[element] = [gate_name]
                     final_sequence_flows[gate_name] = targets
                     print(f"Added {elements[gate_name]} '{gate_name}' after '{element}' with targets {targets}")
                 else:
+                    print("past6")
                     final_sequence_flows[element] = targets
             #else:
                 #final_sequence_flows[element] = targets
         else:
             final_sequence_flows[element] = targets
-
+    print("done")
     # Process XOR gates for elements with the same target
     inverted_flows = {}
     for element, targets in final_sequence_flows.items():
@@ -374,12 +377,13 @@ def generate_bpmn_svg(file_path, output_svg_path):
     G.layout(prog='neato')
     G.draw(output_svg_path)
 
-def correlation_analysis(dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file, n, m):
+def correlation_analysis(dmm_process_file, dmm_change_file,dmm_mdt_file, dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file, n, m):
     df1 = pd.read_csv(dmm_process_file)
     df1_names = df1['Name']
     df1 = df1.drop(columns=['Name'])
     df1 = df1.iloc[:, :57]
     df2 = pd.read_csv(dmm_change_file)
+    df3 = pd.read_csv(dmm_mdt_file)
     df5 = pd.read_csv(dmm_change_mdt_file)
     df6 = pd.read_csv(dmm_process_mdt_file)
     df7 = pd.read_csv(dmm_pa_ca_file)
@@ -393,34 +397,44 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_
     change_vector = dmm_change.T
     methode = df8.iloc[:n].values
     digital_tools = df8.iloc[n:].values
-    dmm_methode = np.identity(n, dtype=int)
-    dmm_dt = np.identity(m, dtype=int)
+    dmm_methode = df3.iloc[:n,1:11].join(df3.iloc[:n,16:])
+    dmm_dt = df3.iloc[n:,1:20]
     dmm_PA_CA = df7.values
-    dmm_CA_MA = df5.iloc[:, 1:n+1].values
-    dmm_CA_DT = df5.iloc[:, n+1:].values
-    dmm_PA_MA= df6.iloc[:, 1:n+1].values
-    dmm_PA_DT = df6.iloc[:, n+1:].values
-
+    dmm_CA_MA = df5.iloc[:, 6:].values
+    dmm_CA_DT = df5.iloc[:, 1:6].join(df5.iloc[: , 11:]).values
+    dmm_PA_MA= df6.iloc[:, 1:].values
+    dmm_PA_DT = df6.iloc[:, 1:].values
     dmm_methode = dmm_methode*methode
-    print(dmm_methode)
+    
+    
     dmm_dt = dmm_dt*digital_tools
+
+    dmm_method_PA = dmm_methode.iloc[:,:10]
+    dmm_method_CA = dmm_methode.iloc[:,10:]
+    dmm_dt_PA = dmm_dt.iloc[:,:10]
+    dmm_dt_CA = dmm_dt.iloc[:,10:]
+    
     #Change related process
     print("Correlation result:")
     R_change = dmm_PA_CA @ change_vector
     R_change_MA = dmm_CA_MA.T @ change_vector
     R_change_DT = dmm_CA_DT.T @ change_vector
-    R_process_MA = dmm_process @ dmm_PA_MA
-    R_process_DT = dmm_process @ dmm_PA_DT
+    dmm_PA_MA = dmm_PA_MA @ dmm_method_PA.T
+    R_process_MA = dmm_process[:,:22] @ dmm_PA_MA
+    dmm_PA_DT = dmm_PA_DT @ dmm_dt_PA.T
+    R_process_DT = dmm_process[:,:22] @ dmm_PA_DT
     R_change_process = dmm_process @ R_change
     print("Change related process:", R_change_process)
-    vector_change_methode = dmm_methode @ R_change_MA
+    vector_change_methode = dmm_method_CA @ R_change_MA
+    vector_change_methode = vector_change_methode.to_numpy()
     print("vector_change_methode:", vector_change_methode)
-    vector_change_DT = dmm_dt @ R_change_DT
+    vector_change_DT = dmm_dt_CA @ R_change_DT
+    vector_change_DT = vector_change_DT.to_numpy()
     print("vector_change_DT", vector_change_DT)
 
-    correlation_process_methode = R_process_MA @ dmm_methode.T
+    correlation_process_methode = R_process_MA.to_numpy()
     print("correlation_process_methode", correlation_process_methode)
-    correlation_process_DT = R_process_DT @ dmm_dt.T
+    correlation_process_DT = R_process_DT.to_numpy()
     print("correlation_process_DT", correlation_process_DT)
 
     combined = pd.DataFrame({
@@ -430,7 +444,7 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_
 
     # 假设 R_change_process 是一个 numpy 数组或 pandas 数据框中的列
     max_value = np.max(R_change_process) # 获取 R_change_process 的最大值
-    threshold = max_value * 0.9 # 计算最大值的 80%
+    threshold = max_value * 0.85 # 计算最大值的 80%
     # 筛选出 R_change_process 大于阈值的行
     related_process = combined[combined['R_change_process'] > threshold]
     print(related_process)
@@ -457,7 +471,7 @@ def correlation_analysis(dmm_process_file, dmm_change_file, dmm_pa_ca_file, dmm_
 
     df_correlation_process_methode = pd.DataFrame(correlation_process_methode, index=df1_names, columns=methode_names)
     df_correlation_process_DT = pd.DataFrame(correlation_process_DT, index=df1_names, columns=dt_names)
-
+    print(df_correlation_process_methode.loc['Step 2'].nlargest(22))
     max_values_info = []
 
     for name in related_process['Name']:
