@@ -17,9 +17,11 @@ app.secret_key = 'supersecretkey'  # 用于闪现消息
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 SETTING_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings')
+CHANGE_RECORD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Change_Record')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 app.config['SETTING_FOLDER'] = SETTING_FOLDER
+app.config['CHANGE_RECORD_FOLDER'] = CHANGE_RECORD_FOLDER
 CSV_FILE_PATH = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
 PA_PI_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'pa_pi.csv')
 DMT_CSV_PATH = os.path.join(UPLOAD_FOLDER, 'digital_tools.csv')
@@ -401,7 +403,7 @@ def save_lessons_learned():
     changeID = pd.read_csv(change_attribute_file)['changeId'][0]
     print("Received data:", data)
     # 指定 CSV 文件路径
-    file_path = os.path.join(app.config['OUTPUT_FOLDER'], 'Change_record.csv')
+    file_path = os.path.join(app.config['CHANGE_RECORD_FOLDER'], 'Change_record.csv')
     print(f"CSV file path: {file_path}")
     # 检查文件是否存在
     if not os.path.exists(file_path):
