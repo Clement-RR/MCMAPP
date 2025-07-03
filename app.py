@@ -6,6 +6,7 @@ import datetime
 import service
 import csv
 import webview
+import numpy as np
 from werkzeug.utils import secure_filename
 
 
@@ -286,6 +287,49 @@ def save_change_attribute():
 
 @app.route('/save_method_attribute', methods=['POST'])
 def save_method_attribute():
+    data = request.get_json()
+    MDT_data = data[1]
+    MDTType = data[0]
+    MDTName = data[2]
+    tools_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'digital_tools.csv')
+    DMM_MDT_file_path = os.path.join(app.config['SETTING_FOLDER'], 'DMM_MDT.csv')
+
+    load_selected_MDT()
+    n=len(MDT[:MDT.index("3D Modeling and Animation")])
+    m=len(MDT[MDT.index("3D Modeling and Animation"):])
+
+    if MDTType['MDTType'] == 0:
+        df_tools = pd.read_csv(tools_file_path, header=None)
+        df_DMM = pd.read_csv(DMM_MDT_file_path, header=None)
+
+        
+        print(df_tools)
+        df_tools = pd.DataFrame(np.insert(df_tools.values, n, values=[MDTName['MDTName'], '1', ''], axis=0))
+        df_DMM = pd.DataFrame(np.insert(df_DMM.values, n+1, values=[MDTName['MDTName'],MDT_data['I1'],MDT_data['I2'],MDT_data['I3'],MDT_data['I4'],MDT_data['I5'],MDT_data['I6'],MDT_data['I7'],MDT_data['I8'],MDT_data['I9'],MDT_data['I10'],MDT_data['DT1'],MDT_data['DT2'],MDT_data['DT3'],MDT_data['DT4'],MDT_data['DT5'],MDT_data['MDT1'],MDT_data['MDT2'],MDT_data['MDT3'],MDT_data['MDT4'],MDT_data['M1'],MDT_data['M2'],MDT_data['M3'],MDT_data['M4'],MDT_data['M5']], axis=0))
+        print(df_tools)
+        with open(tools_file_path, 'w') as f:
+            df_tools.to_csv(f, header=False, index=False, lineterminator='\n')
+            f.flush()
+            os.fsync(f.fileno())
+        time.sleep(0.1)
+        with open(DMM_MDT_file_path, 'w') as f:
+            df_DMM.to_csv(f, header = False,index=False, lineterminator='\n')
+            f.flush()
+            os.fsync(f.fileno())
+        time.sleep(0.1)
+        return jsonify({'status': 'success', 'message': 'Change registered succesfully.'})
+    else:
+        with open(tools_file_path, mode='a', newline='', encoding='utf-8') as out:
+            writer = csv.DictWriter(out, fieldnames=['360-Degree Feedback','1','../static/images/360.png'])
+            writer.writerow({'360-Degree Feedback':MDTName['MDTName'],'1':'1','../static/images/360.png':''})
+            out.close
+        with open(DMM_MDT_file_path, mode='a', newline='', encoding='utf-8') as out:
+            writer = csv.DictWriter(out, fieldnames=['','I1','I2','I3','I4','I5','I6','I7','I8','I9','I10','DT1','DT2','DT3','DT4','DT5','MDT1','MDT2','MDT3','MDT4','M1','M2','M3','M4','M5'])
+            writer.writerow({'':MDTName['MDTName'],'I1':MDT_data['I1'],'I2':MDT_data['I2'],'I3':MDT_data['I3'],'I4':MDT_data['I4'],'I5':MDT_data['I5'],'I6':MDT_data['I6'],'I7':MDT_data['I7'],'I8':MDT_data['I8'],'I9':MDT_data['I9'],'I10':MDT_data['I10'],'DT1':MDT_data['DT1'],'DT2':MDT_data['DT2'],'DT3':MDT_data['DT3'],'DT4':MDT_data['DT4'],'DT5':MDT_data['DT5'],'MDT1':MDT_data['MDT1'],'MDT2':MDT_data['MDT2'],'MDT3':MDT_data['MDT3'],'MDT4':MDT_data['MDT4'],'M1':MDT_data['M1'],'M2':MDT_data['M2'],'M3':MDT_data['M3'],'M4':MDT_data['M4'],'M5':MDT_data['M5']})
+            out.close
+        return jsonify({'status': 'success', 'message': 'Change registered succesfully.'})
+
+    
     
     return jsonify({'status': 'success'})
 
@@ -373,9 +417,7 @@ def save_lessons_learned():
         df = pd.read_csv(file_path)
         print("DataFrame before update:", df.head())
         if changeID in df['Change ID'].values:       
-            print('past') 
             if not df[(df['Process step'] == data['Name']) & (df['Change ID'] == changeID)].empty:
-                print('past if') 
                 row_index = df[(df['Process step'] == data['Name']) & (df['Change ID'] == changeID)].index
                 print("Row index to update:", row_index)
                 if not row_index.empty:

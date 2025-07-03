@@ -404,9 +404,8 @@ def correlation_analysis(dmm_process_file, dmm_change_file,dmm_mdt_file, dmm_pa_
     dmm_CA_DT = df5.iloc[:, 1:6].join(df5.iloc[: , 11:]).values
     dmm_PA_MA= df6.iloc[:, 1:].values
     dmm_PA_DT = df6.iloc[:, 1:].values
-    dmm_methode = dmm_methode*methode
-    
-    
+
+    dmm_methode = dmm_methode*methode    
     dmm_dt = dmm_dt*digital_tools
 
     dmm_method_PA = dmm_methode.iloc[:,:10]
@@ -417,24 +416,34 @@ def correlation_analysis(dmm_process_file, dmm_change_file,dmm_mdt_file, dmm_pa_
     #Change related process
     print("Correlation result:")
     R_change = dmm_PA_CA @ change_vector
+
     R_change_MA = dmm_CA_MA.T @ change_vector
     R_change_DT = dmm_CA_DT.T @ change_vector
+
     dmm_PA_MA = dmm_PA_MA @ dmm_method_PA.T
     R_process_MA = dmm_process[:,:22] @ dmm_PA_MA
     dmm_PA_DT = dmm_PA_DT @ dmm_dt_PA.T
     R_process_DT = dmm_process[:,:22] @ dmm_PA_DT
+
     R_change_process = dmm_process @ R_change
     print("Change related process:", R_change_process)
+
     vector_change_methode = dmm_method_CA @ R_change_MA
+
+    correlation_process_methode = (R_process_MA*np.tile(vector_change_methode,(1,len(df1_names))).T).to_numpy()
+
     vector_change_methode = vector_change_methode.to_numpy()
     print("vector_change_methode:", vector_change_methode)
     vector_change_DT = dmm_dt_CA @ R_change_DT
+
+    correlation_process_DT = (R_process_DT*np.tile(vector_change_DT,(1,len(df1_names))).T).to_numpy()
+
     vector_change_DT = vector_change_DT.to_numpy()
     print("vector_change_DT", vector_change_DT)
 
-    correlation_process_methode = R_process_MA.to_numpy()
+    
     print("correlation_process_methode", correlation_process_methode)
-    correlation_process_DT = R_process_DT.to_numpy()
+    
     print("correlation_process_DT", correlation_process_DT)
 
     combined = pd.DataFrame({
@@ -467,11 +476,10 @@ def correlation_analysis(dmm_process_file, dmm_change_file,dmm_mdt_file, dmm_pa_
             df_vector_change_methode['vector_change_methode'].idxmax()].to_dict(),
         'max_vector_change_DT': df_vector_change_DT.loc[df_vector_change_DT['vector_change_DT'].idxmax()].to_dict()
     }
-    print(max_vector_change)
+  
 
     df_correlation_process_methode = pd.DataFrame(correlation_process_methode, index=df1_names, columns=methode_names)
     df_correlation_process_DT = pd.DataFrame(correlation_process_DT, index=df1_names, columns=dt_names)
-    print(df_correlation_process_methode.loc['Step 2'].nlargest(22))
     max_values_info = []
 
     for name in related_process['Name']:
@@ -488,8 +496,6 @@ def correlation_analysis(dmm_process_file, dmm_change_file,dmm_mdt_file, dmm_pa_
     max_values_df = pd.DataFrame(max_values_info)
     combined_result = max_values_df.set_index(['Name','Ranking'])
     print(max_values_df)
-
-    name_color_dict = {row['Name']: 'red' for _, row in max_values_df.iterrows()}
     
     return max_vector_change, combined_result, max_values_df, related_process
 

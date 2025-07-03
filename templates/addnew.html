@@ -37,44 +37,44 @@
                 <h5>Content attributes</h5>
                </div>
                <div id="ContentAttributes">
-                <div class="dropdown-container" id="AutomationIntegration">
-                    <label for="AutomationIntegration">Automation/Integration</label>
+                <div class="dropdown-container" id="I1">
+                    <label for="I1">Automation/Integration</label>
                 </div>
     
-                <div class="dropdown-container" id="AnalysisEvaluation">
-                    <label for="AnalysisEvaluation">Analysis/Evaluation</label>
+                <div class="dropdown-container" id="I2">
+                    <label for="I2">Analysis/Evaluation</label>
                 </div>
     
-                <div class="dropdown-container" id="CollaborationCommunication">
-                    <label for="CollaborationCommunication">Collaboration/Communication</label>
+                <div class="dropdown-container" id="I3">
+                    <label for="I3">Collaboration/Communication</label>
                 </div>
     
-                <div class="dropdown-container" id="ControllingMonitoring">
-                    <label for="ControllingMonitoring">Controlling/Monitoring</label>
+                <div class="dropdown-container" id="I4">
+                    <label for="I4">Controlling/Monitoring</label>
                 </div>
     
-                <div class="dropdown-container" id="DeploymentExecution">
-                    <label for="DeploymentExecution">Deployment/Execution</label>
+                <div class="dropdown-container" id="I5">
+                    <label for="I5">Deployment/Execution</label>
                 </div>
     
-                <div class="dropdown-container" id="Documentation">
-                    <label for="Documentation">Documentation</label>
+                <div class="dropdown-container" id="I6">
+                    <label for="I6">Documentation</label>
                 </div>
     
-                <div class="dropdown-container" id="IdeationDevelopment">
-                    <label for="IdeationDevelopment">Ideation/Development</label>
+                <div class="dropdown-container" id="I7">
+                    <label for="I7">Ideation/Development</label>
                 </div>
     
-                <div class="dropdown-container" id="PersonalDevelopmentTraining">
-                    <label for="PersonalDevelopmentTraining">Personal Development/Training</label>
+                <div class="dropdown-container" id="I8">
+                    <label for="I8">Personal Development/Training</label>
                 </div>
     
-                <div class="dropdown-container" id="Planning">
-                    <label for="Planning">Planning</label>
+                <div class="dropdown-container" id="I9">
+                    <label for="I9">Planning</label>
                 </div>
     
-                <div class="dropdown-container" id="Visualization">
-                    <label for="Visualization">Visualization</label>
+                <div class="dropdown-container" id="I10">
+                    <label for="I10">Visualization</label>
                 </div>
                </div>
             </div>
@@ -88,37 +88,41 @@
                     <h5 id="ApplicationAttributes">Application attributes (M)</h5>
                 </div>
                 <div>
-                    <div class="dropdown-container" id="AA1">
-                        <label for="AA1" id="AA1Label">Average execution time</label>
+                    <div class="dropdown-container" id="MDT1">
+                        <label for="MDT1" id="MDT1Label">User friendliness</label>
                     </div>
-                    <div class="dropdown-container" id="AA2">
-                        <label for="AA2" id="AA2Label">Scalability potential</label>
+                    <div class="dropdown-container" id="MDT2">
+                        <label for="MDT2" id="MDT2Label">Complexity level</label>
                     </div>
-                    <div class="dropdown-container" id="AA3">
-                        <label for="AA3" id="AA3Label">Robustness of the results</label>
+                    <div class="dropdown-container" id="MDT3">
+                        <label for="MDT3" id="MDT3Label">Scalability potential</label>
                     </div>
-                    <div class="dropdown-container" id="AA4">
-                        <label for="AA4" id="AA4Label">Quality of the results</label>
+                    <div class="dropdown-container" id="MDT4">
+                        <label for="MDT4" id="MDT4Label">Quality of the results</label>
                     </div>
-                    <div class="dropdown-container" id="AA5">
-                        <label for="AA5" id="AA5Label">Complexity level</label>
+                    <div class="dropdown-container" id="MDT5">
+                        <label for="MDT5" id="MDT5Label">Necessary expertise</label>
                     </div>
-                    <div class="dropdown-container" id="AA6">
-                        <label for="AA6" id="AA6Label">Execution effort</label>
+                    <div class="dropdown-container" id="MDT6">
+                        <label for="MDT6" id="MDT6Label">Implementation effort</label>
                     </div>
-                    <div class="dropdown-container" id="AA7">
-                        <label for="AA7" id="AA7Label">User-friendliness</label>
+                    <div class="dropdown-container" id="MDT7">
+                        <label for="MDT7" id="MDT7Label">Costs</label>
                     </div>
-                    <div class="dropdown-container" id="AA8">
-                        <label for="AA8" id="AA8Label">Required training time</label>
+                    <div class="dropdown-container" id="MDT8">
+                        <label for="MDT8" id="MDT8Label">Provision for support</label>
                     </div>
-                    <div class="dropdown-container" id="AA9">
-                        <label for="AA9" id="AA9Label">Customization potential</label>
+                    <div class="dropdown-container" id="MDT9">
+                        <label for="MDT9" id="MDT9Label">Ease of access</label>
                     </div>
                 </div>
         
             </div>
-         <div>           
+         <!--<div>
+            <input type="file" id="fileInput" style="display: none;" onchange="uploadFile(event)">
+            <a href="#" class="btn btn-primary" onclick="document.getElementById('fileInput').click(); return false;">Upload </a>
+        </div>-->
+        <div>           
             <button class="left-button btn btn-success" id="save" onclick="saveData()">Add</button>            
          </div>
 
@@ -158,45 +162,102 @@
 
                 document.getElementById('Title').innerHTML = 'Input new digital tool'
                 document.getElementById('ApplicationAttributes').innerHTML = 'Application Attributes (DT)'
-                document.getElementById('AA1Label').innerHTML = 'Implementation effort'
-                document.getElementById('AA3Label').innerHTML = 'Costs'
-                document.getElementById('AA6Label').innerHTML = 'Ease of access'
-                document.getElementById('AA8Label').innerHTML = 'Necessary expertise'
-                document.getElementById('AA9Label').innerHTML = 'Provision for support'
+                document.getElementById('MDT5Label').innerHTML = 'Required training time'
+                document.getElementById('MDT6Label').innerHTML = 'Robustness of the results'
+                document.getElementById('MDT7Label').innerHTML = 'Average execution time'
+                document.getElementById('MDT8Label').innerHTML = 'Execution effort'
+                document.getElementById('MDT9Label').innerHTML = 'Customization potential'
+                
             }
             else {
                 document.getElementById('Title').innerHTML = 'Input new method'
                 document.getElementById('ApplicationAttributes').innerHTML = 'Application Attributes (M)'
-                document.getElementById('AA1Label').innerHTML = 'Average execution time'
-                document.getElementById('AA3Label').innerHTML = 'Robustness of the results'
-                document.getElementById('AA6Label').innerHTML = 'Execution effort'
-                document.getElementById('AA8Label').innerHTML = 'Required training time'
-                document.getElementById('AA9Label').innerHTML = 'Customization potential'
+                document.getElementById('MDT5Label').innerHTML = 'Necessary expertise'
+                document.getElementById('MDT6Label').innerHTML = 'Implementation effort'
+                document.getElementById('MDT7Label').innerHTML = 'Costs'
+                document.getElementById('MDT8Label').innerHTML = 'Provision for support'
+                document.getElementById('MDT9Label').innerHTML = 'Ease of access'
             }
         }
 
 
         /* save data */
         function saveData() {
+            const data = []
+            
             if (document.getElementById('Title').innerHTML === 'Input new method'){
-                const MDT = 0
+                const MDTType = {
+                    MDTType: 0,
+                }
+                const MDT = {
+                    I1: document.getElementById('I1').querySelector('select').value,
+                    I2: document.getElementById('I2').querySelector('select').value,
+                    I3: document.getElementById('I3').querySelector('select').value,
+                    I4: document.getElementById('I4').querySelector('select').value,
+                    I5: document.getElementById('I5').querySelector('select').value,
+                    I6: document.getElementById('I6').querySelector('select').value,
+                    I7: document.getElementById('I7').querySelector('select').value,
+                    I8: document.getElementById('I8').querySelector('select').value,
+                    I9: document.getElementById('I9').querySelector('select').value,
+                    I10: document.getElementById('I10').querySelector('select').value,
+                    DT1: 0,
+                    DT2: 0,
+                    DT3: 0,
+                    DT4: 0,
+                    DT5: 0,
+                    MDT1: document.getElementById('MDT1').querySelector('select').value,
+                    MDT2: document.getElementById('MDT2').querySelector('select').value,
+                    MDT3: document.getElementById('MDT3').querySelector('select').value,
+                    MDT4: document.getElementById('MDT4').querySelector('select').value,
+                    M1: document.getElementById('MDT5').querySelector('select').value,
+                    M2: document.getElementById('MDT6').querySelector('select').value,
+                    M3: document.getElementById('MDT7').querySelector('select').value,
+                    M4: document.getElementById('MDT8').querySelector('select').value,
+                    M5: document.getElementById('MDT9').querySelector('select').value,
+                };
+                data.push(MDTType)
+                data.push(MDT)
             }
             else{
-                const MDT = 1
+                const MDTType = {
+                    MDTType: 1,
+                }
+                const MDT = {
+                    I1: document.getElementById('I1').querySelector('select').value,
+                    I2: document.getElementById('I2').querySelector('select').value,
+                    I3: document.getElementById('I3').querySelector('select').value,
+                    I4: document.getElementById('I4').querySelector('select').value,
+                    I5: document.getElementById('I5').querySelector('select').value,
+                    I6: document.getElementById('I6').querySelector('select').value,
+                    I7: document.getElementById('I7').querySelector('select').value,
+                    I8: document.getElementById('I8').querySelector('select').value,
+                    I9: document.getElementById('I9').querySelector('select').value,
+                    I10: document.getElementById('I10').querySelector('select').value,
+                    DT1: document.getElementById('MDT5').querySelector('select').value,
+                    DT2: document.getElementById('MDT6').querySelector('select').value,
+                    DT3: document.getElementById('MDT7').querySelector('select').value,
+                    DT4: document.getElementById('MDT8').querySelector('select').value,
+                    DT5: document.getElementById('MDT9').querySelector('select').value,
+                    MDT1: document.getElementById('MDT1').querySelector('select').value,
+                    MDT2: document.getElementById('MDT2').querySelector('select').value,
+                    MDT3: document.getElementById('MDT3').querySelector('select').value,
+                    MDT4: document.getElementById('MDT4').querySelector('select').value,
+                    M1: 0,
+                    M2: 0,
+                    M3: 0,
+                    M4: 0,
+                    M5: 0,
+                };
+                data.push(MDTType)
+                data.push(MDT)
+                    
             }
-            const data = {
+            const MDTName = {
                 MDTName: document.getElementById('MDTName').value.toString(),
-                AutomationIntegration: document.getElementById('AutomationIntegration').querySelector('select').value,
-                AnalysisEvaluation: document.getElementById('AnalysisEvaluation').querySelector('select').value,
-                CollaborationCommunication: document.getElementById('CollaborationCommunication').querySelector('select').value,
-                ControllingMonitoring: document.getElementById('ControllingMonitoring').querySelector('select').value,
-                DeploymentExecution: document.getElementById('DeploymentExecution').querySelector('select').value,
-                Documentation: document.getElementById('Documentation').querySelector('select').value,
-                IdeationDevelopment: document.getElementById('IdeationDevelopment').querySelector('select').value,
-                PersonalDevelopmentTraining: document.getElementById('PersonalDevelopmentTraining').querySelector('select').value,
-                Planning: document.getElementById('Planning').querySelector('select').value,
-                Visualization: document.getElementById('Visualization').querySelector('select').value,
             };
+            data.push(MDTName)
+            console.log(data)
+           
 
             fetch('/save_method_attribute', {
                 method: 'POST',
@@ -216,7 +277,7 @@
                 }
             })
             .catch(error => console.error('Error:', error));
-            window.close();
+            
         }
 
         window.onload = function() {
