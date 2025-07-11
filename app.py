@@ -125,7 +125,7 @@ def uploadSetting():
         return jsonify({'message': 'No selected file'}), 400
     if file:
         filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_path = os.path.join(app.config['SETTING_FOLDER'], filename)
         file.save(file_path)
         session['uploadedSetting_file'] = filename 
         return jsonify({'message': 'File successfully uploaded'}), 200

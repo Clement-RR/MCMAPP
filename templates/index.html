@@ -160,7 +160,7 @@
             <div class="card-body">
               <h5 class="card-title">Download DSM template</h5>
               <p class="card-text">Download the DSM template to begin the input process.</p>
-              <a href="../static/dsm_template.csv" class="btn btn-success">Download</a>
+              <a href="/static/dsm_template.csv" class="btn btn-success">Download</a>
             </div>
           </div>
           <div class="card mb-4 col-10">
@@ -337,9 +337,12 @@
       <h1 >Settings</h1>
       <div class="card mb-4 col-10">
         <div class="card-body">
-          <h5 class="card-title">Details of correlation matrix</h5>
-          <p class="card-text">View and edit the correlation matrix details.</p>
-          <a href="/static/readmore/Correlation_all.xlsx" class="btn btn-info">View</a>
+          <h5 class="card-title">Details of correlation matrices</h5>
+          <p class="card-text">View and edit the correlation matrices details.</p>
+          <a href="/static/readmore/DMM_CA_MDT_New.csv" class="btn btn-info">Change attributes - Methods and digital tools</a>
+          <a href="/static/readmore/DMM_PA_MDT_New.csv" class="btn btn-info">Process attributes - Methods and digital tools</a>
+          <a href="/static/readmore/DMM_MDT.csv" class="btn btn-info">Methods and digital tools</a>
+          <a href="/static/readmore/DMM_PA_CA.csv" class="btn btn-info">Process attributes - Change attributes</a>
           <input type="file" id="SettingsInput" style="display: none;" onchange="uploadSetting(event)">
           <!-- Button triggers the file input dialog -->
           <a href="#" class="btn btn-primary" onclick="document.getElementById('SettingsInput').click(); return false;">Upload</a>          
