@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # 用于闪现消息
+app.secret_key = 'supersecretkey' 
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
@@ -112,7 +112,7 @@ def upload():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        session['uploaded_file'] = filename  # 保存上传的文件名到 session
+        session['uploaded_file'] = filename  
         return jsonify({'message': 'File successfully uploaded'}), 200
     return jsonify({'message': 'File upload failed'}), 400
 
@@ -127,7 +127,7 @@ def uploadSetting():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        session['uploadedSetting_file'] = filename  # 保存上传的文件名到 session
+        session['uploadedSetting_file'] = filename 
         return jsonify({'message': 'File successfully uploaded'}), 200
     return jsonify({'message': 'File upload failed'}), 400
 
@@ -153,32 +153,27 @@ def get_pa_pi_data():
         pa_pi_df = pd.read_csv(PA_PI_CSV_PATH)
         if node_id in pa_pi_df['Name'].values:
             node_data = pa_pi_df.loc[pa_pi_df['Name'] == node_id].to_dict(orient='records')[0]
-            # 将空值替换为0
+            
             node_data = {k: (0 if pd.isna(v) else v) for k, v in node_data.items()}
             return jsonify(node_data)
     return jsonify({"message": "Node data not found"}), 404
 
 @app.route('/update_data', methods=['POST'])
 def update_data():
-    # 读取 JSON 数据
     data = request.get_json()
     print("Received data:", data)
     selectedOption = data['selectedOption']
     updates = data['data']
 
-    # 指定 CSV 文件路径
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'pa_pi.csv')
     print(f"CSV file path: {file_path}")
-    # 检查文件是否存在
     if not os.path.exists(file_path):
         print(f"File {file_path} not found.")
         return jsonify({'status': 'error', 'message': 'Data file does not exist.'})
 
     try:
-        # 读取 CSV 文件
         df = pd.read_csv(file_path)
         print("DataFrame before update:", df.head())
-        # 检查 'Name' 列中是否包含 selectedOption
         if selectedOption in df['Name'].values:
             row_index = df[df['Name'] == selectedOption].index
             print("Row index to update:", row_index)
@@ -187,12 +182,10 @@ def update_data():
                     if item['id'] in df.columns:
                         df.at[row_index[0], item['id']] = int(item['value'])
                 print("DataFrame after update:", df.head())
-                # 写回 CSV 文件并刷新文件系统缓冲区
                 with open(file_path, 'w') as f:
                     df.to_csv(f, index=False)
                     f.flush()
                     os.fsync(f.fileno())
-                # 添加短暂的延迟
                 time.sleep(0.1)
 
                 df.to_csv(file_path, index=False)  # Ensure writing inside the condition
@@ -210,21 +203,17 @@ def delete_data():
     data = request.get_json()
     selectedOption = data['selectedOption']
 
-    # 指定 pa_pi.csv 文件路径
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'pa_pi.csv')
     print(f"CSV file path: {file_path}")
 
-    # 检查文件是否存在
     if not os.path.exists(file_path):
         print(f"File {file_path} not found.")
         return jsonify({'status': 'error', 'message': 'Data file does not exist.'})
 
     try:
-        # 读取 CSV 文件
         df = pd.read_csv(file_path)
         print("DataFrame before delete:", df.head())
 
-        # 清空指定行的除 'Name' 列以外的数据
         row_index = df[df['Name'] == selectedOption].index
         if not row_index.empty:
             for col in df.columns:
@@ -233,13 +222,11 @@ def delete_data():
 
         print("DataFrame after delete:", df.head())
 
-        # 写回 CSV 文件
         with open(file_path, 'w', newline='', encoding='utf-8') as f:
             df.to_csv(f, index=False)
             f.flush()
             os.fsync(f.fileno())
 
-        # 添加短暂的延迟
         time.sleep(0.1)
 
         return jsonify({'status': 'success', 'message': 'Data deleted successfully.'})
@@ -253,11 +240,9 @@ def select_change_attribute():
     if data and 'ids' in data:
         ids = data['ids']
 
-        # 更新 previous_CA_columns
         previous_CA_columns = ids
         print(previous_CA_columns)
 
-        # 现在将传入的数据保存到selected_CA.csv文件，覆盖之前的内容
         selected_data_df = pd.DataFrame(columns=ids)
         selected_data_df.to_csv(SELECTED_CA_FILE_PATH, index=False, mode='w')
         try:
@@ -330,10 +315,8 @@ def save_method_attribute():
             writer.writerow({'':MDTName['MDTName'],'I1':MDT_data['I1'],'I2':MDT_data['I2'],'I3':MDT_data['I3'],'I4':MDT_data['I4'],'I5':MDT_data['I5'],'I6':MDT_data['I6'],'I7':MDT_data['I7'],'I8':MDT_data['I8'],'I9':MDT_data['I9'],'I10':MDT_data['I10'],'DT1':MDT_data['DT1'],'DT2':MDT_data['DT2'],'DT3':MDT_data['DT3'],'DT4':MDT_data['DT4'],'DT5':MDT_data['DT5'],'MDT1':MDT_data['MDT1'],'MDT2':MDT_data['MDT2'],'MDT3':MDT_data['MDT3'],'MDT4':MDT_data['MDT4'],'M1':MDT_data['M1'],'M2':MDT_data['M2'],'M3':MDT_data['M3'],'M4':MDT_data['M4'],'M5':MDT_data['M5']})
             out.close
         return jsonify({'status': 'success', 'message': 'Change registered succesfully.'})
-
     
     
-    return jsonify({'status': 'success'})
 
 @app.route('/save_DMT', methods=['POST'])
 def save_DMT():
@@ -342,7 +325,6 @@ def save_DMT():
     labels = data.get('labels', [])
     selected_MDT = labels
 
-    # 创建 DataFrame 并保存到 CSV 文件
     df = pd.DataFrame(labels)
     df.to_csv(DMT_CSV_PATH, index=False, mode='w', header=not os.path.exists(DMT_CSV_PATH))
 
@@ -402,10 +384,8 @@ def save_lessons_learned():
     change_attribute_file = os.path.join(UPLOAD_FOLDER, 'change_attribute.csv')
     changeID = pd.read_csv(change_attribute_file)['changeId'][0]
     print("Received data:", data)
-    # 指定 CSV 文件路径
     file_path = os.path.join(app.config['CHANGE_RECORD_FOLDER'], 'Change_record.csv')
     print(f"CSV file path: {file_path}")
-    # 检查文件是否存在
     if not os.path.exists(file_path):
         with open(file_path, 'w', newline='', encoding='utf-8') as out:
             writer = csv.DictWriter(out, fieldnames=['Change ID','Process step','Date','Time','Responsible','Method or digital tool','Lessons learned'])
@@ -415,7 +395,6 @@ def save_lessons_learned():
         return jsonify({'status': 'success', 'message': 'Change record created and change registered succesfully.'})
 
     try:
-        # 读取 CSV 文件
         df = pd.read_csv(file_path)
         print("DataFrame before update:", df.head())
         if changeID in df['Change ID'].values:       

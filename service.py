@@ -7,17 +7,13 @@ import numpy as np
 
 
 def initialize_data_csv(file_path, output_folder):
-    # 确保输出文件夹存在
     os.makedirs(output_folder, exist_ok=True)
-
-    # 定义输出文件路径
     dsm_output_file = os.path.join(output_folder, 'dsm.csv')
     pa_pi_output_file = os.path.join(output_folder, 'pa_pi.csv')
     change_attribute_output_file = os.path.join(output_folder, 'change_attribute.csv')
     digital_tools_output_file = os.path.join(output_folder, 'digital_tools.csv')
     selected_CA_output_file = os.path.join(output_folder, 'selected_CA.csv')
 
-    # 生成 gpa01-gpa22, spa01-spa35, pi01-pi28
     additional_columns = [f'gpa{i:02d}' for i in range(1, 23)] + \
                          [f'spa{i:02d}' for i in range(1, 36)] + \
                          [f'pi{i:02d}' for i in range(1, 29)]
@@ -35,11 +31,9 @@ def initialize_data_csv(file_path, output_folder):
             reader = csv.DictReader(infile)
             original_fieldnames = reader.fieldnames
 
-            # 获取除前两列外的其余所有列的字段名
             dsm_fieldnames = original_fieldnames[2:]
             pa_pi_fieldnames = ['Name'] + additional_columns
 
-            # 打开输出文件并写入数据
             with open(dsm_output_file, mode='w', newline='', encoding='utf-8') as dsm_outfile, \
                     open(pa_pi_output_file, mode='w', newline='', encoding='utf-8') as pa_pi_outfile, \
                     open(change_attribute_output_file, mode='w', newline='', encoding='utf-8') as change_attribute_outfile, \
@@ -56,11 +50,9 @@ def initialize_data_csv(file_path, output_folder):
                 change_attribute_writer.writeheader()
 
                 for row in reader:
-                    # 写入 dsm.csv
                     dsm_row = {field: row[field] for field in dsm_fieldnames}
                     dsm_writer.writerow(dsm_row)
 
-                    # 写入 pa_pi.csv
                     pa_pi_row = {'Name': row['Name']}
                     pa_pi_row.update({col: '' for col in additional_columns})
                     pa_pi_writer.writerow(pa_pi_row)
@@ -213,8 +205,6 @@ def generate_bpmn_svg(file_path, output_svg_path):
     final_sequence_flows = {}
     for element, targets in sequence_flows.items():
         if len(targets) > 1:
-            #print(any(not set(targets).isdisjoint(set(sequence_flows[target])) for target in targets))
-            #if not any(not set(targets).isdisjoint(set(sequence_flows[target])) for target in targets):
                 if not element == 'Start':
                     row = dsm_df.loc[element]
                     gate_type = None
@@ -451,10 +441,8 @@ def correlation_analysis(dmm_process_file, dmm_change_file,dmm_mdt_file, dmm_pa_
         'R_change_process': R_change_process.flatten()
     })
 
-    # 假设 R_change_process 是一个 numpy 数组或 pandas 数据框中的列
-    max_value = np.max(R_change_process) # 获取 R_change_process 的最大值
-    threshold = max_value * 0.85 # 计算最大值的 80%
-    # 筛选出 R_change_process 大于阈值的行
+    max_value = np.max(R_change_process) 
+    threshold = max_value * 0.85 
     related_process = combined[combined['R_change_process'] > threshold]
     print(related_process)
 
@@ -535,4 +523,3 @@ def result_initialization(input_file_path,csv_file_path, Result_Tasks):
             input.close
             out.close
     
-#correlation_analysis(dmm_process_file, dmm_change_file, dmm_methode_file, dmm_dt_file,dmm_pa_ca_file, dmm_change_mdt_file, dmm_process_mdt_file, selected_M_DT_file)
