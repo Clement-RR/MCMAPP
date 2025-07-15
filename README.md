@@ -17,4 +17,4 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install all pyt
 
 ## Running Application
 
-Use python app.py
+Run -python app.py
