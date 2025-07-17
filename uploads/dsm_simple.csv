@@ -1,9 +1,0 @@
-Swimlane,Type,Name,Stage 1,Stage 2,Stage 3,Stage 4,Stage 5,Stage 6,Stage 7,Stage 8
-Engineering,Task,Stage 1,,S,,,,,,
-Engineering,Task,Stage 2,,,S,,,,,
-Engineering,Task,Stage 3,,,,S,,,,
-Engineering,Task,Stage 4,,,,,S,,,
-Engineering,Task,Stage 5,,,,,,S,,
-Engineering,Task,Stage 6,,,,,,,S,
-Engineering,Task,Stage 7,,,,,,,,S
-Engineering,Task,Stage 8,,,,,,,,
